@@ -7,8 +7,6 @@ Sending automated emails for the University of Birmingham Theory Group PhD semin
 To set up the script, you must fill out a `config.json` with relevant data.
 
 ```json
-\\ config.json
-
 {
   "page": "",
   "smtp": {
@@ -26,5 +24,4 @@ To set up the script, you must fill out a `config.json` with relevant data.
   },
   "room": "",
 }
-
 ```
