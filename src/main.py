@@ -10,6 +10,12 @@ import sys
 ANNOUNCE = 0
 REMINDER = 1
 
+# Debug
+DEBUG = False
+
+def debug(string):
+    if DEBUG :
+         print(string)
 
 def find_talk_and_send_email(config, mode):
 
@@ -41,13 +47,14 @@ def main(config_file):
         mode = ANNOUNCE
         time = config["announce_time"]
     else:
-        print("Not the right day to send an email")
+        debug("Not the right day to send an email")
         exit(1)
 
     if today.time() == datetime.datetime.strptime(time, "%H:%M"):
         find_talk_and_send_email(config, mode)
     else:
-        print("Not the right time to send an email")
+        debug("Not the right time to send an email")
+        exit(1)
 
 
 if __name__ == "__main__":
