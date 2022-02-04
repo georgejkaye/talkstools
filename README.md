@@ -13,15 +13,19 @@ To set up the script, you must fill out a `config.json` with relevant data.
     "host": "",
     "port": "",
     "user": "",
-    "password": "", 
+    "password": ""
   },
   "sender_email": "",
   "recipient_email": "", 
   "zoom": {
     "link": "",
     "id": "",
-    "password": "",
+    "password": ""
   },
   "room": "",
+  "admin": {
+      "name": "",
+      "email": ""
+  }
 }
 ```
