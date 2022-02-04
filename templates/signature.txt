@@ -1,0 +1,10 @@
+Hope to see you all there!
+
+Best
+{{ admin["name"] }}
+
+-----
+
+Bravo
+{{ page }}
+{{ admin["email"] }}

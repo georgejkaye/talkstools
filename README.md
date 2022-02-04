@@ -6,9 +6,9 @@ Sending automated emails for the University of Birmingham Theory Group PhD semin
 
 To set up the script, you must fill out a `config.json` with relevant data.
 
-```json
+```jsonc
 {
-  "page": "",
+  "talks_id": "",  // The numbers after http://talks.bham.ac.uk/show/index/
   "smtp": {
     "host": "",
     "port": "",
@@ -26,6 +26,8 @@ To set up the script, you must fill out a `config.json` with relevant data.
   "admin": {
       "name": "",
       "email": ""
-  }
-}
+  },
+  "day": "", // The day the talk takes place on: 0 is Monday ... 5 is Friday
+  "announce_time": "",
+  "reminder_time": "",
 ```

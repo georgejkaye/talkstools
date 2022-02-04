@@ -1,0 +1,7 @@
+Hi all
+
+This week's Bravo talk will be presented by {{ talk.speaker }}.
+
+{% include "talk_details.txt" %}
+
+{% include "signature.txt" %}

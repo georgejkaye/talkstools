@@ -3,16 +3,18 @@ import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+from scraper import talks_url_base
 
 
-def write_email(config, talk):
+def write_email(config, template, talk):
     env = Environment(
         loader=FileSystemLoader("templates"),
         autoescape=select_autoescape(["html", "xml"])
     )
-    template = env.get_template("upcoming_talk.txt")
+
+    template = env.get_template(template)
     email = template.render(
-        talk=talk, room=config["room"], zoom=config["zoom"], admin=config["admin"], page=config["page"])
+        talk=talk, room=config["room"], zoom=config["zoom"], admin=config["admin"], page=talks_url_base + str(config["talks_id"]))
     return email
 
 
@@ -26,7 +28,7 @@ def send_email(config, talk, email):
     smtp_password = config["smtp"]["password"]
 
     message = MIMEMultipart("alternative")
-    message["Subject"] = f"Talk by { talk.speaker }: { talk.datetime.get_short_string() }"
+    message["Subject"] = f"Talk by { talk.speaker }: { talk.get_short_datetime() }"
     message["From"] = email_sender
     message["To"] = email_recipient
     text = MIMEText(email, "plain")
