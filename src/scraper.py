@@ -2,6 +2,7 @@ import re
 import requests
 import datetime
 from bs4 import BeautifulSoup
+from debug import debug
 
 datetime_regex = r'([A-Za-z]+) ([0-3][0-9]) ([A-Za-z]+) ([0-9][0-9][0-9][0-9]), ([0-2][0-9]:[0-5][0-9])-([0-2][0-9]:[0-5][0-9])'
 speaker_regex = r'([A-Za-z ]+)( \(.*\))?\.'
@@ -30,10 +31,10 @@ class Talk:
 talks_url_base = "http://talks.bham.ac.uk/show/index/"
 
 
-def make_request(link):
+def make_request(link, log_file):
     page = requests.get(link)
     if page.status_code != 200:
-        print(f"Error {page.status_code}: could not get page {link}")
+        debug(log_file, f"Error {page.status_code}: could not get page {link}")
         exit(1)
     return page.content
 
@@ -44,10 +45,10 @@ def in_next_days(date, range):
     return date <= today + range
 
 
-def get_next_talk(config, range):
+def get_next_talk(config, log_file, range):
     bravo_page = talks_url_base + str(config["talks_id"])
 
-    upcoming_talks = make_request(bravo_page)
+    upcoming_talks = make_request(bravo_page, log_file)
 
     soup = BeautifulSoup(upcoming_talks, "html.parser")
     talks = soup.find_all("div", class_="vevent")

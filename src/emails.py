@@ -4,6 +4,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from scraper import talks_url_base
+from debug import debug
 
 
 def write_email(config, template, talk):
@@ -18,7 +19,7 @@ def write_email(config, template, talk):
     return email
 
 
-def send_email(config, talk, email):
+def send_email(config, log_file, talk, email):
 
     email_sender = config["sender_email"]
     email_recipient = config["recipient_email"]
@@ -38,3 +39,5 @@ def send_email(config, talk, email):
     with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as server:
         server.login(smtp_user, smtp_password)
         server.sendmail(email_sender, email_recipient, message.as_string())
+
+    debug(log_file, f"Sent email to {email_recipient}")
