@@ -1,5 +1,6 @@
 import smtplib
 import ssl
+from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -8,8 +9,12 @@ from debug import debug
 
 
 def write_email(config, template, talk):
+
+    current_dir = Path(__file__).resolve().parent
+    templates_dir = current_dir / "templates"
+
     env = Environment(
-        loader=FileSystemLoader("templates"),
+        loader=FileSystemLoader(templates_dir),
         autoescape=select_autoescape(["html", "xml"])
     )
 
