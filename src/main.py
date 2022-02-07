@@ -44,8 +44,10 @@ def main(config_file, log_file):
     else:
         debug(log_file, "Not the right day to send an email")
         exit(1)
-
-    if today.time() == datetime.datetime.strptime(time, "%H:%M"):
+    # Parse the time from the config
+    time = datetime.datetime.strptime(time, "%H:%M")
+    # We can't be too precise as it might take a few seconds to load the script
+    if today.hour == time.hour and today.min == time.min:
         find_talk_and_send_email(config, log_file, mode)
     else:
         debug(log_file, "Not the right time to send an email")
