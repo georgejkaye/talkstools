@@ -27,7 +27,7 @@ To set up the script, you must fill out a `config.json` with relevant data.
       "name": "",
       "email": ""
   },
-  "day": "", // The day the talk takes place on: 0 is Monday ... 5 is Friday
+  "day": "", // The day the talk takes place on: 0 is Monday ... 4 is Friday
   "announce_time": "",
   "reminder_time": "",
 ```
