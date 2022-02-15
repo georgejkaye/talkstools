@@ -27,9 +27,25 @@ To set up the script, you must fill out a `config.json` with relevant data.
       "name": "",
       "email": ""
   },
-  "day": "", // The day the talk takes place on: 0 is Monday ... 4 is Friday
-  "announce_time": "",
-  "reminder_time": ""
+  // The day the talk takes place on: 0 is Monday ... 4 is Friday
+  "talk_day": "",
+  // OPTIONAL: Announcement emails are sent to let people know the talk is happening
+  "announce": {
+    "day": 0,
+    "time": "10:00"
+  },
+  // OPTIONAL: Reminder emails are sent shortly before the talk takes place
+  "reminder": {
+    // How many days before the talk to send the reminder
+    "offset": 0,
+    "time": "10:00"
+  },
+  // OPTIONAL: Before the announcement is made, check for the abstract and title
+  "abstract": {
+    // How many days before the announcement to make the check
+    "offset": 1, 
+    "time": "10:00"
+  }
 }
 ```
 

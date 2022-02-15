@@ -1,10 +1,10 @@
 Hope to see you all there!
 
 Best
-{{ admin["name"] }}
+{{ config.admin.name }}
 
 -----
 
 Bravo
-{{ page }}
-{{ admin["email"] }}
+{{ config.page }}
+{{ config.admin.email }}

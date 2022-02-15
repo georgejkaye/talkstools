@@ -43,10 +43,11 @@ def get_talks_xml_url(id, range):
     return f"{talks_url_base}/show/xml/{id}?seconds_before_today=0&seconds_after_today={seconds}"
 
 
-def make_request(link, log_file):
+def make_request(link, config):
     page = requests.get(link)
     if page.status_code != 200:
-        debug(log_file, f"Error {page.status_code}: could not get page {link}")
+        debug(config.log,
+              f"Error {page.status_code}: could not get page {link}")
         exit(1)
     return page.content
 
@@ -57,13 +58,13 @@ def in_next_days(date, range):
     return date <= today + range
 
 
-def get_next_talk(config, log_file, range):
+def get_next_talk(config, range):
     """
         Get the next talk in a given range (of days). Returns None if there is no such talk.
     """
-    bravo_page = get_talks_xml_url(config["talks_id"], range)
+    bravo_page = get_talks_xml_url(config.id, range)
 
-    upcoming_talks = make_request(bravo_page, log_file)
+    upcoming_talks = make_request(bravo_page, config.log)
 
     tree = ET.ElementTree(ET.fromstring(upcoming_talks))
     root = tree.getroot()
@@ -90,7 +91,7 @@ def get_next_talk(config, log_file, range):
         # Unfortunately talks was made in the noughties and there were no major
         # global pandemics at that point.
         #
-        # As a workaround I try to have a *Abstract* tag to distinguish where the
+        # As a workaround I try to have an *Abstract* tag to distinguish where the
         # abstract proper starts. If this is found, then all the text after this will
         # be put in. Otherwise, the whole textbox will be dumped in
         split_at_abstract_tag = abstract_string.split("*Abstract*\n\n")

@@ -6,8 +6,8 @@ from main import find_talk_and_send_email, ANNOUNCE, load_config
 
 
 def main(config_file, log_file):
-    config = load_config(config_file)
-    find_talk_and_send_email(config, log_file, ANNOUNCE)
+    config = load_config(config_file, log_file)
+    find_talk_and_send_email(config, ANNOUNCE)
 
 
 if __name__ == "__main__":
