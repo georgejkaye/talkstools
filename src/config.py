@@ -1,6 +1,7 @@
 import json
 from debug import debug
 from scraper import get_talks_page
+import calendar
 
 # Modes
 ANNOUNCE = 0
@@ -95,6 +96,7 @@ class Config:
         self.room = json["room"]
         self.admin = AdminDetails(json["admin"])
         self.talk_day = json["talk_day"]
+        self.talk_day_name = calendar.day_name[self.talk_day]
 
         self.announce = get_daytime(
             json.get("announce"), default_announce_day, default_announce_time)
@@ -102,6 +104,9 @@ class Config:
             json.get("reminder"), default_reminder_offset, default_reminder_time, self.talk_day)
         self.abstract = get_daytime_from_offset(json.get(
             "abstract"), default_abstract_offset, default_abstract_time, self.announce.day)
+
+        if "emails" in json:
+            self.emails = json["emails"]
 
         self.log = log_file
 

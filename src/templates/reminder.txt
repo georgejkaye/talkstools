@@ -5,4 +5,6 @@ Just a reminder that {{ talk.speaker }} will be giving a talk today,
 
 {% include "talk_details.txt" %}
 
+Hope to see you all there!
+
 {% include "signature.txt" %}

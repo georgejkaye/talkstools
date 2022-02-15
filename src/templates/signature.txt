@@ -1,5 +1,3 @@
-Hope to see you all there!
-
 Best
 {{ config.admin.name }}
 

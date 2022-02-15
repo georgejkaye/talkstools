@@ -24,32 +24,54 @@ def find_talk_and_send_email(config, mode):
         send_email(config, next_talk, email, mode)
 
 
+def check_abstract(config):
+    next_talk = get_next_talk(config, config.abstract.offset + 1)
+
+    if next_talk is not None:
+        if next_talk.title == "Title to be confirmed":
+            missing_title = True
+        else:
+            missing_title = False
+        if next_talk.abstract == "Abstract not available":
+            missing_abstract = True
+        else:
+            missing_abstract = False
+
+        # if missing_title or missing_abstract:
+            template = "abstract.txt"
+            email = write_email(config, template, next_talk)
+            send_email(config, next_talk, email, ABSTRACT)
+
+
 def main(config_file, log_file):
 
     today = datetime.datetime.today()
 
     config = load_config(config_file, log_file)
 
-    if today.weekday() == int(config["day"]):
-        mode = REMINDER
-        time = config["reminder_time"]
-    elif today.weekday() == 0:
+    if today.weekday() == config.announce.day:
         mode = ANNOUNCE
-        time = config["announce_time"]
-    elif today.weekday() == 4:
+        time = config.announce.time
+    elif today.weekday() == config.reminder.day:
+        mode = REMINDER
+        time = config.reminder.time
+    elif today.weekday() == config.abstract.day:
         mode = ABSTRACT
-        time = config["abstract_time"]
+        time = config.abstract.time
     else:
         debug(config.log, "Not the right day to send an email")
-        exit(1)
+        exit(0)
     # Parse the time from the config
     time = datetime.datetime.strptime(time, "%H:%M")
     # We can't be too precise as it might take a few seconds to load the script
     if today.hour == time.hour and today.min == time.min:
-        find_talk_and_send_email(config, mode)
+        if mode == ABSTRACT:
+            check_abstract(config)
+        else:
+            find_talk_and_send_email(config, mode)
     else:
         debug(config.log, "Not the right time to send an email")
-        exit(1)
+        exit(0)
 
 
 if __name__ == "__main__":

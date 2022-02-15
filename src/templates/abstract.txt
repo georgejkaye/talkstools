@@ -1,0 +1,7 @@
+Hi
+
+Just a reminder that you are down for a Bravo talk on {{ talk.get_mid_datetime() }}, at {{ talk.start }}. You can find the page at {{ talk.link }}
+
+The talk will be announced soon.{% if talk.has_missing_components %} Don't forget to add a title and abstract before then!{% endif %}
+
+{% include "signature.txt" %}

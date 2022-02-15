@@ -2,7 +2,8 @@
 
 import sys
 
-from main import find_talk_and_send_email, REMINDER, load_config
+from config import load_config
+from main import find_talk_and_send_email, REMINDER
 
 
 def main(config_file, log_file):

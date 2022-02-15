@@ -6,7 +6,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from config import REMINDER
+from config import ABSTRACT, REMINDER
 
 
 def write_email(config, template, talk):
@@ -27,7 +27,14 @@ def write_email(config, template, talk):
 def send_email(config, talk, email, mode):
 
     email_sender = config.sender_email
-    email_recipient = config.recipient_email
+
+    if mode == ABSTRACT:
+        email_recipient = talk.email
+        email_cc = None
+    else:
+        email_recipient = config.recipient_email
+        email_cc = talk.email
+
     smtp_host = config.smtp.host
     smtp_port = config.smtp.port
     smtp_user = config.smtp.user
@@ -35,14 +42,19 @@ def send_email(config, talk, email, mode):
 
     message = MIMEMultipart("alternative")
 
-    subject = f"Talk by { talk.speaker }, { talk.get_short_datetime() }"
-    if mode == REMINDER:
-        subject = f"Reminder: " + subject
+    if mode == ABSTRACT:
+        subject = "Your upcoming Bravo talk"
+    else:
+        subject = f"Talk by { talk.speaker }, { talk.get_short_datetime() }"
+        if mode == REMINDER:
+            subject = f"Reminder: " + subject
 
     message["Subject"] = subject
 
     message["From"] = email_sender
     message["To"] = email_recipient
+    if email_cc is not None:
+        message["Cc"] = email_cc
     text = MIMEText(email, "plain")
     message.attach(text)
 

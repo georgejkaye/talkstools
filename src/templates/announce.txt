@@ -4,4 +4,6 @@ This week's Bravo talk will be presented by {{ talk.speaker }}.
 
 {% include "talk_details.txt" %}
 
+Hope to see you all there!
+
 {% include "signature.txt" %}
