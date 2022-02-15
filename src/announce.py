@@ -1,5 +1,17 @@
 #!/bin/python3
 
-from main import find_talk_and_send_email, ANNOUNCE
+import sys
 
-find_talk_and_send_email(ANNOUNCE)
+from main import find_talk_and_send_email, ANNOUNCE, load_config
+
+
+def main(config_file, log_file):
+    config = load_config(config_file)
+    find_talk_and_send_email(config, log_file, ANNOUNCE)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: python announce.py <config file> <log file>")
+        exit(1)
+    main(sys.argv[1], sys.argv[2])

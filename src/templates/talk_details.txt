@@ -1,14 +1,15 @@
-*******************************************************************************
+***************************************
 
-{{ talk.speaker }} - '{{ talk.title }}'
+'{{ talk.title }}'
+{{ talk.speaker }} ({{ talk.institution }})
 {{ talk.get_long_datetime() }}
 {{ talk.link }}
 
 * Local venue: {{ room }}
-* Zoom link: {{ zoom["link"] }}
-* Meeting ID: {{ zoom["id"] }}
-* Password: {{ zoom["password"] }}
+* Zoom link: {{ zoom.link }}
+* Meeting ID: {{ zoom.id }}
+* Password: {{ zoom.password }}
 
 {{ talk.abstract }}
 
-*******************************************************************************
+***************************************

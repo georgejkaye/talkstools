@@ -28,10 +28,70 @@ def find_talk_and_send_email(config, log_file, mode):
         send_email(config, log_file, next_talk, email)
 
 
-def main(config_file, log_file):
+def check_config(config):
+    if "talks_id" not in config:
+        return "talks_id"
 
+    if "smtp" in config:
+        smtp = config["smtp"]
+        if "port" not in smtp:
+            return "smtp.port"
+        if "host" not in smtp:
+            return "smtp.host"
+        if "user" not in smtp:
+            return "smtp.user"
+        if "password" not in smtp:
+            return "smtp.password"
+    else:
+        return "smtp"
+
+    if "sender_email" not in config:
+        return "sender_email"
+    if "recipient_email" not in config:
+        return "recipient_email"
+
+    if "zoom" in config:
+        zoom = config["zoom"]
+        if "link" not in zoom:
+            return "zoom.link"
+        if "id" not in zoom:
+            return "zoom.id"
+        if "password" not in zoom:
+            return "zoom.password"
+    else:
+        return "zoom"
+
+    if "room" not in config:
+        return "room"
+
+    if "admin" in config:
+        admin = config["admin"]
+        if "name" not in admin:
+            return "admin.name"
+        if "email" not in admin:
+            return "admin.email"
+    else:
+        return "admin"
+
+    if "announce_time" not in config:
+        return "announce_time"
+    if "reminder_time" not in config:
+        return "reminder_time"
+
+    return ""
+
+
+def load_config(config_file):
     with open(config_file) as config_stream:
         config = json.load(config_stream)
+    check = check_config(config)
+    if not check == "":
+        debug(log_file, f"Incomplete config, missing field {error}")
+        exit(1)
+    return config
+
+
+def main(config_file, log_file):
 
     today = datetime.datetime.today()
 

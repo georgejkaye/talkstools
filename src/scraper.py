@@ -1,17 +1,19 @@
 import re
 import requests
 import datetime
-from bs4 import BeautifulSoup
+import xml.etree.ElementTree as ET
+from html import unescape
 from debug import debug
 
 datetime_regex = r'([A-Za-z]+) ([0-3][0-9]) ([A-Za-z]+) ([0-9][0-9][0-9][0-9]), ([0-2][0-9]:[0-5][0-9])-([0-2][0-9]:[0-5][0-9])'
-speaker_regex = r'([A-Za-z ]+)( \(.*\))?\.'
+speaker_regex = r'([A-Za-z ]+) (\((.*)\))?'
 
 
 class Talk:
-    def __init__(self, title, speaker, link, date, start, end, abstract):
+    def __init__(self, title, speaker, institution, link, date, start, end, abstract):
         self.title = title
         self.speaker = speaker
+        self.institution = institution
         self.link = link
         self.date = date
         self.start = start
@@ -28,7 +30,17 @@ class Talk:
         return datetime.datetime.strftime(self.date, "%a %d %b") + " @ " + self.start
 
 
-talks_url_base = "http://talks.bham.ac.uk/show/index/"
+talks_url_base = "http://talks.bham.ac.uk"
+
+
+def get_talks_page(id):
+    return f"{talks_url_base}/show/index/{id}"
+
+
+def get_talks_xml_url(id, range):
+    seconds_in_day = 86400
+    seconds = range * seconds_in_day
+    return f"{talks_url_base}/show/xml/{id}?seconds_before_today=0&seconds_after_today={seconds}"
 
 
 def make_request(link, log_file):
@@ -46,49 +58,47 @@ def in_next_days(date, range):
 
 
 def get_next_talk(config, log_file, range):
-    bravo_page = talks_url_base + str(config["talks_id"])
+    """
+        Get the next talk in a given range (of days). Returns None if there is no such talk.
+    """
+    bravo_page = get_talks_xml_url(config["talks_id"], range)
 
     upcoming_talks = make_request(bravo_page, log_file)
 
-    soup = BeautifulSoup(upcoming_talks, "html.parser")
-    talks = soup.find_all("div", class_="vevent")
+    tree = ET.ElementTree(ET.fromstring(upcoming_talks))
+    root = tree.getroot()
 
-    if len(talks) > 0:
-        next_talk = talks[0]
-        next_talk_children = list(next_talk.children)
+    talk = root.find("talk")
 
-        date_entry = list(next_talk_children[9].children)
-        talk_datetime_string = date_entry[1].text
-        date_string = talk_datetime_string[0:-7]
+    if talk is not None:
+        talk_title = unescape(talk.find("title").text)
+        talk_speaker_and_institution = talk.find("speaker").text
+        speaker_matches = re.search(
+            speaker_regex, talk_speaker_and_institution)
+        talk_speaker = speaker_matches.group(1)
+        talk_institution = speaker_matches.group(3)
+        talk_link = talk.find("url").text
+        talk_start_date_and_time = talk.find("start_time").text
+        date_string = talk_start_date_and_time[0:-15]
         talk_date = datetime.datetime.strptime(
-            date_string, "%A %d %B %Y")
-        talk_start = talk_datetime_string[-5:]
-        talk_end = date_entry[3].text
+            date_string, "%a, %d %b %Y")
+        talk_start = talk_start_date_and_time[-14:-9]
+        talk_end = talk.find("end_time").text[-14:-9]
+        abstract_string = talk.find("abstract").text
 
-        if not in_next_days(talk_date, range):
-            print("Next talk not in range")
-            return None
+        # In a perfect world we would have separate fields for all the zoom stuff.
+        # Unfortunately talks was made in the noughties and there were no major
+        # global pandemics at that point.
+        #
+        # As a workaround I try to have a *Abstract* tag to distinguish where the
+        # abstract proper starts. If this is found, then all the text after this will
+        # be put in. Otherwise, the whole textbox will be dumped in
+        split_at_abstract_tag = abstract_string.split("*Abstract*\n\n")
 
-        talk_heading = list(next_talk_children[1].children)[0]
-        talk_link = talk_heading["href"]
-        talk_title = talk_heading.text
-
-        speaker_entry = list(next_talk_children[5].children)[1].text
-        talk_speaker = re.search(speaker_regex, speaker_entry).group(1)
-
-        talk_page = make_request(talk_link)
-
-        soup = BeautifulSoup(talk_page, "html.parser")
-        talk_paragraphs = soup.find("div", class_="vevent").find_all("p")
-
-        # By default, there are five p elements with no abstract
-        if len(talk_paragraphs) > 5:
-            abstract_paragraphs = talk_paragraphs[3:-2]
-            abstract_string = abstract_paragraphs[0].text
-            for abs in abstract_paragraphs[1:]:
-                abstract_string = abstract_string + "\n\n" + abs.text
+        if len(split_at_abstract_tag) > 1:
+            abstract_string = split_at_abstract_tag[-1]
         else:
-            abstract_string = "Abstract to be confirmed"
+            abstract_string = split_at_abstract_tag[0]
 
-        return Talk(talk_title, talk_speaker, talk_link, talk_date, talk_start, talk_end, abstract_string)
+        return Talk(talk_title, talk_speaker, talk_institution, talk_link, talk_date, talk_start, talk_end, abstract_string)
     return None
