@@ -31,19 +31,20 @@ To set up the script, you must fill out a `config.json` with relevant data.
   "talk_day": "",
   // OPTIONAL: Announcement emails are sent to let people know the talk is happening
   "announce": {
-    "day": 0,
+    // How many days before the talk to announce it (0 is on the day, 1 is the day before...)
+    "days_before": 2,
     "time": "10:00"
   },
   // OPTIONAL: Reminder emails are sent shortly before the talk takes place
   "reminder": {
-    // How many days before the talk to send the reminder
-    "offset": 0,
+    // How many days before the talk to send the reminder (0 is on the day, 1 is the day before...)
+    "days_before": 0,
     "time": "10:00"
   },
   // OPTIONAL: Before the announcement is made, check for the abstract and title
   "abstract": {
-    // How many days before the announcement to make the check
-    "offset": 1, 
+    // How many days before the announcement to make the check (0 is on the day, 1 is the day before...)
+    "days_before": 1, 
     "time": "10:00"
   }
 }

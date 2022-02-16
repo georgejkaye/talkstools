@@ -25,22 +25,14 @@ def find_talk_and_send_email(config, mode):
 
 
 def check_abstract(config):
-    next_talk = get_next_talk(config, config.abstract.offset + 1)
+    next_talk = get_next_talk(
+        config, config.announce.days_before + config.abstract.days_before + 1)
 
     if next_talk is not None:
-        if next_talk.title == "Title to be confirmed":
-            missing_title = True
-        else:
-            missing_title = False
-        if next_talk.abstract == "Abstract not available":
-            missing_abstract = True
-        else:
-            missing_abstract = False
+        template = "abstract.txt"
+        email = write_email(config, template, next_talk)
 
-        # if missing_title or missing_abstract:
-            template = "abstract.txt"
-            email = write_email(config, template, next_talk)
-            send_email(config, next_talk, email, ABSTRACT)
+        send_email(config, next_talk, email, ABSTRACT)
 
 
 def main(config_file, log_file):

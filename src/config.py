@@ -34,7 +34,7 @@ class Daytime:
     def __init__(self, day, time, offset=0):
         self.day = day
         self.time = time
-        self.offset = offset
+        self.days_before = offset
 
 
 def get_offset_day(day, offset):
@@ -50,7 +50,7 @@ def get_daytime_from_offset(json, default_offset, default_time, origin):
         time = default_time
     else:
         if "offset" in json:
-            offset = json["offset"]
+            offset = json["days_before"]
         else:
             offset = default_offset
         if "time" in json:
@@ -77,7 +77,7 @@ def get_daytime(json, default_day, default_time):
     return Daytime(day, time)
 
 
-default_announce_day = 0
+default_announce_offset = 3
 default_announce_time = "10:00"
 default_reminder_offset = 0
 default_reminder_time = "10:00"
@@ -98,8 +98,8 @@ class Config:
         self.talk_day = json["talk_day"]
         self.talk_day_name = calendar.day_name[self.talk_day]
 
-        self.announce = get_daytime(
-            json.get("announce"), default_announce_day, default_announce_time)
+        self.announce = get_daytime_from_offset(
+            json.get("announce"), default_announce_offset, default_announce_time, self.talk_day)
         self.reminder = get_daytime_from_offset(
             json.get("reminder"), default_reminder_offset, default_reminder_time, self.talk_day)
         self.abstract = get_daytime_from_offset(json.get(

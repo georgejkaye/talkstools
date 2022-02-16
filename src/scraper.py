@@ -1,6 +1,6 @@
 import re
 import requests
-import datetime
+from datetime import datetime, timedelta
 import xml.etree.ElementTree as ET
 from textwrap import fill
 from html import unescape
@@ -27,26 +27,30 @@ def wrap_string(string, width):
 
 
 class Talk:
-    def __init__(self, title, speaker, speaker_email, institution, link, date, start, end, abstract):
+    def __init__(self, config, title, speaker, speaker_email, institution, link, date, start, end, abstract):
         self.title = title
         self.speaker = speaker
         self.email = speaker_email
         self.institution = institution
         self.link = link
         self.date = date
+        self.announce_date = date - timedelta(days=config.announce.days_before)
         self.start = start
         self.end = end
         self.abstract = wrap_string(abstract, line_width)
         self.has_missing_components = self.title == "Title to be confirmed" or self.abstract == "Abstract not available"
 
     def get_long_datetime(self):
-        return datetime.datetime.strftime(self.date, "%A %d %B %Y") + ", " + self.start + "-" + self.end
+        return datetime.strftime(self.date, "%A %d %B %Y") + ", " + self.start + "-" + self.end
 
     def get_mid_datetime(self):
-        return datetime.datetime.strftime(self.date, "%A %d %B")
+        return datetime.strftime(self.date, "%A %d %B")
 
     def get_short_datetime(self):
-        return datetime.datetime.strftime(self.date, "%a %d %b") + " @ " + self.start
+        return datetime.strftime(self.date, "%a %d %b") + " @ " + self.start
+
+    def get_announce_time(self):
+        return datetime.strftime(self.announce_date, "%A %d %B")
 
 
 talks_url_base = "http://talks.bham.ac.uk"
@@ -110,7 +114,7 @@ def get_next_talk(config, range):
         talk_link = talk.find("url").text
         talk_start_date_and_time = talk.find("start_time").text
         date_string = talk_start_date_and_time[0:-15]
-        talk_date = datetime.datetime.strptime(
+        talk_date = datetime.strptime(
             date_string, "%a, %d %b %Y")
         talk_start = talk_start_date_and_time[-14:-9]
         talk_end = talk.find("end_time").text[-14:-9]
@@ -128,5 +132,5 @@ def get_next_talk(config, range):
         else:
             abstract_string = split_at_abstract_tag[0]
 
-        return Talk(talk_title, talk_speaker, talk_speaker_email, talk_institution, talk_link, talk_date, talk_start, talk_end, abstract_string)
+        return Talk(config, talk_title, talk_speaker, talk_speaker_email, talk_institution, talk_link, talk_date, talk_start, talk_end, abstract_string)
     return None
