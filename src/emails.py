@@ -5,7 +5,7 @@ from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-
+from textwrap import wrap
 from config import ABSTRACT, REMINDER
 
 

@@ -2,13 +2,28 @@ import re
 import requests
 import datetime
 import xml.etree.ElementTree as ET
+from textwrap import fill
 from html import unescape
 from debug import debug
-from bs4 import BeautifulSoup
 
 datetime_regex = r'([A-Za-z]+) ([0-3][0-9]) ([A-Za-z]+) ([0-9][0-9][0-9][0-9]), ([0-2][0-9]:[0-5][0-9])-([0-2][0-9]:[0-5][0-9])'
 speaker_regex = r'([A-Za-z ]+) (\((.*)\))?'
 speaker_url_regex = r'\"\/user\/show\/([0-9]*)\"'
+
+line_width = 80
+
+
+def wrap_string(string, width):
+    """
+    Wrap a string at a given line width.
+
+    Nabbed from https://stackoverflow.com/a/26538082
+    """
+    paragraphs = string.split("\n")
+    output = fill(paragraphs[0], width)
+    for para in paragraphs[1:]:
+        output = output + "\n" + fill(para, width)
+    return output
 
 
 class Talk:
@@ -21,7 +36,7 @@ class Talk:
         self.date = date
         self.start = start
         self.end = end
-        self.abstract = abstract
+        self.abstract = wrap_string(abstract, line_width)
         self.has_missing_components = self.title == "Title to be confirmed" or self.abstract == "Abstract not available"
 
     def get_long_datetime(self):
