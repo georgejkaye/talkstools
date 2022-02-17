@@ -49,7 +49,7 @@ def get_daytime_from_offset(json, default_offset, default_time, origin):
         offset = default_offset
         time = default_time
     else:
-        if "offset" in json:
+        if "days_before" in json:
             offset = json["days_before"]
         else:
             offset = default_offset
@@ -77,7 +77,7 @@ def get_daytime(json, default_day, default_time):
     return Daytime(day, time)
 
 
-default_announce_offset = 3
+default_announce_offset = 2
 default_announce_time = "10:00"
 default_reminder_offset = 0
 default_reminder_time = "10:00"

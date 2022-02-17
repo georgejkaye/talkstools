@@ -43,7 +43,7 @@ def send_email(config, talk, email, mode):
     message = MIMEMultipart("alternative")
 
     if mode == ABSTRACT:
-        subject = "Your upcoming Bravo talk"
+        subject = f"Your upcoming Bravo talk, { talk.get_short_datetime() }"
     else:
         subject = f"Talk by { talk.speaker }, { talk.get_short_datetime() }"
         if mode == REMINDER:
@@ -63,15 +63,15 @@ def send_email(config, talk, email, mode):
         try:
             server.login(smtp_user, smtp_password)
         except Exception as e:
-            debug(config.log,
+            debug(config,
                   f"Error logging into server {smtp_host}:{smtp_port} as user {smtp_user}: {e.smtp_code} {e.smtp_error.decode('UTF-8')}")
             exit(1)
 
         try:
             server.sendmail(email_sender, email_recipient, message.as_string())
         except Exception as e:
-            debug(config.log,
+            debug(config,
                   f"Error sending email from server {smtp_host}:{smtp_port} as user {smtp_user}: {e.smtp_code} {e.smtp_error.decode('UTF-8')}")
             exit(1)
 
-    debug(config.log, f"Sent email to {email_recipient}")
+    debug(config, f"Sent email to {email_recipient}")

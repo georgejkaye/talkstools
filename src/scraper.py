@@ -35,6 +35,11 @@ class Talk:
         self.link = link
         self.date = date
         self.announce_date = date - timedelta(days=config.announce.days_before)
+
+        # account for weekends
+        if self.announce_date.weekday() == 5 or self.announce_date.weekday() == 6:
+            self.announce_date = self.announce_date - timedelta(days=2)
+
         self.start = start
         self.end = end
         self.abstract = wrap_string(abstract, line_width)
@@ -64,16 +69,15 @@ def get_speaker_page(id):
     return f"{talks_url_base}/user/show/{id}"
 
 
-def get_talks_xml_url(id, range):
-    seconds_in_day = 86400
-    seconds = range * seconds_in_day
-    return f"{talks_url_base}/show/xml/{id}?seconds_before_today=0&seconds_after_today={seconds}"
+def get_talks_xml_url(id):
+    return f"{talks_url_base}/show/xml/{id}"
 
 
 def make_request(config, link):
+    debug(config, f"Making request to {link}")
     page = requests.get(link)
     if page.status_code != 200:
-        debug(config.log,
+        debug(config,
               f"Error {page.status_code}: could not get page {link}")
         exit(1)
     return page.content
@@ -85,11 +89,8 @@ def in_next_days(date, range):
     return date <= today + range
 
 
-def get_next_talk(config, range):
-    """
-        Get the next talk in a given range (of days). Returns None if there is no such talk.
-    """
-    bravo_page = get_talks_xml_url(config.id, range)
+def get_next_talk(config):
+    bravo_page = get_talks_xml_url(config.id)
 
     upcoming_talks = make_request(config, bravo_page)
 
