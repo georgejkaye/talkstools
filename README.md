@@ -4,50 +4,40 @@ Sending automated emails for the University of Birmingham Theory Group PhD semin
 
 ## Configuration
 
-To set up the script, you must fill out a `config.json` with relevant data.
+Before using the scripts, you must configure them using a `yml` file.
 
-```jsonc
-{
-  "talks_id": "",  // The numbers after http://talks.bham.ac.uk/show/index/
-  "smtp": {
-    "host": "",
-    "port": "",
-    "user": "",
-    "password": ""
-  },
-  "sender_email": "",
-  "recipient_email": "", 
-  "zoom": {
-    "link": "",
-    "id": "",
-    "password": ""
-  },
-  "room": "",
-  "admin": {
-      "name": "",
-      "email": ""
-  },
-  // The day the talk takes place on: 0 is Monday ... 4 is Friday
-  "talk_day": "",
-  // OPTIONAL: Announcement emails are sent to let people know the talk is happening
-  "announce": {
-    // How many days before the talk to announce it (0 is on the day, 1 is the day before...)
-    "days_before": 2,
-    "time": "10:00"
-  },
-  // OPTIONAL: Reminder emails are sent shortly before the talk takes place
-  "reminder": {
-    // How many days before the talk to send the reminder (0 is on the day, 1 is the day before...)
-    "days_before": 0,
-    "time": "10:00"
-  },
-  // OPTIONAL: Before the announcement is made, check for the abstract and title
-  "abstract": {
-    // How many days before the announcement to make the check (0 is on the day, 1 is the day before...)
-    "days_before": 1, 
-    "time": "10:00"
-  }
-}
+```yml
+// The numbers after http://talks.bham.ac.uk/show/index/
+talks_id: 
+admin:
+  name: 
+  email:
+smtp:
+  host: 
+  port:
+  user:
+  password:
+sender_email:
+recipient_email:
+zoom:
+  link:
+  id:
+  password:
+room:
+// The day the talk takes place on, 0 is Monday ... 4 is Friday
+talk_day:
+// Announcement emails are sent to let people know the talk is happening
+announce:
+  days_before: 2
+  time: 10:00
+// Reminder emails are sent shortly before the talk takes place
+reminder:
+  days_before: 0,
+  time: 10:00
+// Abstract emails are sent to the speaker shortly before announcement
+abstract:
+  days_before: 1 
+  time: 10:00
 ```
 
 ## Usage

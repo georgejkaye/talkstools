@@ -1,4 +1,4 @@
-import json
+import yaml
 from debug import debug
 from scraper import get_talks_page
 import calendar
@@ -10,24 +10,24 @@ ABSTRACT = 2
 
 
 class ZoomDetails:
-    def __init__(self, json):
-        self.link = json["link"]
-        self.id = json["id"]
-        self.password = json["password"]
+    def __init__(self, yaml):
+        self.link = yaml["link"]
+        self.id = yaml["id"]
+        self.password = yaml["password"]
 
 
 class AdminDetails:
-    def __init__(self, json):
-        self.name = json["name"]
-        self.email = json["email"]
+    def __init__(self, yaml):
+        self.name = yaml["name"]
+        self.email = yaml["email"]
 
 
 class SMTPDetails:
-    def __init__(self, json):
-        self.host = json["host"]
-        self.port = json["port"]
-        self.user = json["user"]
-        self.password = json["password"]
+    def __init__(self, yaml):
+        self.host = yaml["host"]
+        self.port = yaml["port"]
+        self.user = yaml["user"]
+        self.password = yaml["password"]
 
 
 class Daytime:
@@ -44,34 +44,34 @@ def get_offset_day(day, offset):
     return day
 
 
-def get_daytime_from_offset(json, default_offset, default_time, origin):
-    if json is None:
+def get_daytime_from_offset(yaml, default_offset, default_time, origin):
+    if yaml is None:
         offset = default_offset
         time = default_time
     else:
-        if "days_before" in json:
-            offset = json["days_before"]
+        if "days_before" in yaml:
+            offset = yaml["days_before"]
         else:
             offset = default_offset
-        if "time" in json:
-            time = json["time"]
+        if "time" in yaml:
+            time = yaml["time"]
         else:
             time = default_time
     day = get_offset_day(origin, offset)
     return Daytime(day, time, offset)
 
 
-def get_daytime(json, default_day, default_time):
-    if json is None:
+def get_daytime(yaml, default_day, default_time):
+    if yaml is None:
         day = default_day
         time = default_time
     else:
-        if "day" in json:
-            day = json["day"]
+        if "day" in yaml:
+            day = yaml["day"]
         else:
             day = default_day
-        if "time" in json:
-            time = json["time"]
+        if "time" in yaml:
+            time = yaml["time"]
         else:
             time = default_time
     return Daytime(day, time)
@@ -86,27 +86,27 @@ default_abstract_time = "10:00"
 
 
 class Config:
-    def __init__(self, json, log_file):
-        self.id = json["talks_id"]
+    def __init__(self, yaml, log_file):
+        self.id = yaml["talks_id"]
         self.page = get_talks_page(self.id)
-        self.smtp = SMTPDetails(json["smtp"])
-        self.sender_email = json["sender_email"]
-        self.recipient_email = json["recipient_email"]
-        self.zoom = ZoomDetails(json["zoom"])
-        self.room = json["room"]
-        self.admin = AdminDetails(json["admin"])
-        self.talk_day = json["talk_day"]
+        self.smtp = SMTPDetails(yaml["smtp"])
+        self.sender_email = yaml["sender_email"]
+        self.recipient_email = yaml["recipient_email"]
+        self.zoom = ZoomDetails(yaml["zoom"])
+        self.room = yaml["room"]
+        self.admin = AdminDetails(yaml["admin"])
+        self.talk_day = yaml["talk_day"]
         self.talk_day_name = calendar.day_name[self.talk_day]
 
         self.announce = get_daytime_from_offset(
-            json.get("announce"), default_announce_offset, default_announce_time, self.talk_day)
+            yaml.get("announce"), default_announce_offset, default_announce_time, self.talk_day)
         self.reminder = get_daytime_from_offset(
-            json.get("reminder"), default_reminder_offset, default_reminder_time, self.talk_day)
-        self.abstract = get_daytime_from_offset(json.get(
+            yaml.get("reminder"), default_reminder_offset, default_reminder_time, self.talk_day)
+        self.abstract = get_daytime_from_offset(yaml.get(
             "abstract"), default_abstract_offset, default_abstract_time, self.announce.day)
 
-        if "emails" in json:
-            self.emails = json["emails"]
+        if "emails" in yaml:
+            self.emails = yaml["emails"]
 
         self.log = log_file
 
@@ -161,7 +161,7 @@ def check_config(config):
 
 def load_config(config_file, log_file):
     with open(config_file) as config_stream:
-        config = json.load(config_stream)
+        config = yaml.safe_load(config_stream)
     check = check_config(config)
     if not check == "":
         debug(log_file, f"Incomplete config, missing field {check}")
