@@ -9,7 +9,7 @@ from textwrap import wrap
 from config import ABSTRACT, REMINDER
 
 
-def write_email(config, template, talk):
+def write_email(config, seminar, template, talk):
 
     current_dir = Path(__file__).resolve().parent
     templates_dir = current_dir / "templates"
@@ -20,19 +20,19 @@ def write_email(config, template, talk):
     )
 
     template = env.get_template(template)
-    email = template.render(config=config, talk=talk)
+    email = template.render(config=config, seminar=seminar, talk=talk)
     return email
 
 
-def send_email(config, talk, email, mode):
+def send_email(config, talk, seminar, email, mode):
 
-    email_sender = config.sender_email
+    email_sender = config.admin.email
 
     if mode == ABSTRACT:
         email_recipient = talk.email
         email_cc = None
     else:
-        email_recipient = config.recipient_email
+        email_recipient = seminar.mailing_list
         email_cc = talk.email
 
     smtp_host = config.smtp.host
@@ -43,9 +43,9 @@ def send_email(config, talk, email, mode):
     message = MIMEMultipart("alternative")
 
     if mode == ABSTRACT:
-        subject = f"Your upcoming Bravo talk, { talk.get_short_datetime() }"
+        subject = f"Your upcoming { talk.series } talk, { talk.get_short_datetime() }"
     else:
-        subject = f"Talk by { talk.speaker }, { talk.get_short_datetime() }"
+        subject = f"{ talk.series } talk by { talk.speaker }, { talk.get_short_datetime() }"
         if mode == REMINDER:
             subject = f"Reminder: " + subject
 

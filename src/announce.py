@@ -8,7 +8,8 @@ from main import find_talk_and_send_email, ANNOUNCE
 
 def main(config_file, log_file):
     config = load_config(config_file, log_file)
-    find_talk_and_send_email(config, ANNOUNCE)
+    for seminar in config.seminars:
+        find_talk_and_send_email(config, seminar, ANNOUNCE)
 
 
 if __name__ == "__main__":

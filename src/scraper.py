@@ -27,15 +27,18 @@ def wrap_string(string, width):
 
 
 class Talk:
-    def __init__(self, config, title, series, speaker, speaker_email, institution, link, date, start, end, abstract):
+    def __init__(self, config, seminar, title, speaker, speaker_email, institution, link, date, start, end, abstract):
         self.title = title
-        self.series = series
+        self.series = seminar.name
         self.speaker = speaker
         self.email = speaker_email
         self.institution = institution
         self.link = link
         self.date = date
-        self.announce_date = date - timedelta(days=config.announce.days_before)
+        self.room = seminar.room
+        self.zoom = seminar.zoom
+        self.announce_date = date - \
+            timedelta(days=seminar.announce.days_before)
 
         # account for weekends
         if self.announce_date.weekday() == 5 or self.announce_date.weekday() == 6:
@@ -91,11 +94,11 @@ def in_next_days(date, range):
     return date <= today + range
 
 
-def get_next_talk(config):
-    bravo_page = get_talks_xml_url(config.id)
-    talk_series = "Bravo"
+def get_next_talk(config, seminar):
+    seminar_page = get_talks_xml_url(seminar.talks_id)
+    talk_series = seminar.name
 
-    upcoming_talks = make_request(config, bravo_page)
+    upcoming_talks = make_request(config, seminar_page)
 
     tree = ET.ElementTree(ET.fromstring(upcoming_talks))
     root = tree.getroot()
@@ -136,5 +139,5 @@ def get_next_talk(config):
         else:
             abstract_string = split_at_abstract_tag[0]
 
-        return Talk(config, talk_title, talk_series, talk_speaker, talk_speaker_email, talk_institution, talk_link, talk_date, talk_start, talk_end, abstract_string)
+        return Talk(config, seminar, talk_title, talk_speaker, talk_speaker_email, talk_institution, talk_link, talk_date, talk_start, talk_end, abstract_string)
     return None

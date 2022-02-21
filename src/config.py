@@ -85,20 +85,16 @@ default_abstract_offset = 1
 default_abstract_time = "10:00"
 
 
-class Config:
-    def __init__(self, yaml, log_file):
-        self.id = yaml["talks_id"]
-        self.page = get_talks_page(self.id)
-        self.smtp = SMTPDetails(yaml["smtp"])
-        self.sender_email = yaml["sender_email"]
-        self.recipient_email = yaml["recipient_email"]
-        self.zoom = ZoomDetails(yaml["zoom"])
-        self.room = yaml["room"]
-        self.admin = AdminDetails(yaml["admin"])
+class Series:
+    def __init__(self, yaml):
+        self.name = yaml["series"]
+        self.talks_id = yaml["talks_id"]
+        self.page = get_talks_page(self.talks_id)
+        self.mailing_list = yaml["mailing_list"]
         self.talk_day = yaml["talk_day"]
         self.talk_day_name = calendar.day_name[self.talk_day]
-        self.discord = yaml["discord"]
-
+        self.zoom = ZoomDetails(yaml["zoom"])
+        self.room = yaml["room"]
         self.announce = get_daytime_from_offset(
             yaml.get("announce"), default_announce_offset, default_announce_time, self.talk_day)
         self.reminder = get_daytime_from_offset(
@@ -106,15 +102,33 @@ class Config:
         self.abstract = get_daytime_from_offset(yaml.get(
             "abstract"), default_abstract_offset, default_abstract_time, self.announce.day)
 
+
+class Config:
+    def __init__(self, yaml, log_file):
+        self.smtp = SMTPDetails(yaml["smtp"])
+        self.admin = AdminDetails(yaml["admin"])
+        self.discord = yaml["discord"]
         if "emails" in yaml:
             self.emails = yaml["emails"]
-
         self.log = log_file
+        self.seminars = []
+        for seminar in yaml["seminars"]:
+            self.seminars.append(Series(seminar))
 
 
 def check_config(config):
-    if "talks_id" not in config:
-        return "talks_id"
+
+    if "admin" in config:
+        admin = config["admin"]
+        if "name" not in admin:
+            return "admin.name"
+        if "email" not in admin:
+            return "admin.email"
+    else:
+        return "admin"
+
+    if "discord" not in config:
+        return "discord"
 
     if "smtp" in config:
         smtp = config["smtp"]
@@ -129,37 +143,30 @@ def check_config(config):
     else:
         return "smtp"
 
-    if "sender_email" not in config:
-        return "sender_email"
-    if "recipient_email" not in config:
-        return "recipient_email"
-
-    if "zoom" in config:
-        zoom = config["zoom"]
-        if "link" not in zoom:
-            return "zoom.link"
-        if "id" not in zoom:
-            return "zoom.id"
-        if "password" not in zoom:
-            return "zoom.password"
+    if "seminars" in config:
+        for seminar in config["seminars"]:
+            if "series" not in seminar:
+                return "series"
+            if "talks_id" not in seminar:
+                return "talks_id"
+            if "mailing_list" not in seminar:
+                return "mailing_list"
+            if "talk_day" not in seminar:
+                return "talk_day"
+            if "zoom" in seminar:
+                zoom = seminar["zoom"]
+                if "link" not in zoom:
+                    return "zoom.link"
+                if "id" not in zoom:
+                    return "zoom.id"
+                if "password" not in zoom:
+                    return "zoom.password"
+            else:
+                return "zoom"
+            if "room" not in seminar:
+                return "room"
     else:
-        return "zoom"
-
-    if "room" not in config:
-        return "room"
-
-    if "admin" in config:
-        admin = config["admin"]
-        if "name" not in admin:
-            return "admin.name"
-        if "email" not in admin:
-            return "admin.email"
-    else:
-        return "admin"
-
-    if "discord" not in config:
-        return "discord"
-
+        return "seminars"
     return ""
 
 

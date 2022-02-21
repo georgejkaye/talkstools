@@ -1,6 +1,6 @@
 Hi all
 
-This week's Bravo talk will be presented by {{ talk.speaker }}.
+This week's {{ talk.series }} talk will be presented by {{ talk.speaker }}.
 
 {% include "talk_details.txt" %}
 

@@ -5,18 +5,21 @@ from config import REMINDER, ANNOUNCE
 from debug import debug
 
 
-def post_to_discord(config, talk, mode):
+def post_to_discord(config, talk, seminar, mode):
     client = discord.Client()
 
     channel_name = "seminars"
 
     if mode == ANNOUNCE:
-        intro = write_email(config, "discord-announce-intro.txt", talk)
-        abstract = write_email(config, "discord-announce-abstract.txt", talk)
-        details = write_email(config, "discord-announce-details.txt", talk)
+        intro = write_email(
+            config, seminar, "discord-announce-intro.txt", talk)
+        abstract = write_email(
+            config, seminar, "discord-announce-abstract.txt", talk)
+        details = write_email(
+            config, seminar, "discord-announce-details.txt", talk)
         messages = [intro, abstract, details]
     elif mode == REMINDER:
-        message = write_email(config, "discord-reminder.txt", talk)
+        message = write_email(config, seminar, "discord-reminder.txt", talk)
         messages = [message]
     else:
         debug(config, "Mode not configured to send discord messages.")

@@ -9,33 +9,33 @@ import datetime
 import sys
 
 
-def find_talk_and_send_email(config, mode):
+def find_talk_and_send_email(config, seminar, mode):
 
     if mode == ANNOUNCE:
         template = "announce.txt"
     elif mode == REMINDER:
         template = "reminder.txt"
 
-    next_talk = get_next_talk(config)
+    next_talk = get_next_talk(config, seminar)
 
     if next_talk is not None:
-        email = write_email(config, template, next_talk)
-        send_email(config, next_talk, email, mode)
-        post_to_discord(config, next_talk, mode)
+        email = write_email(config, seminar, template, next_talk)
+        send_email(config, next_talk, seminar, email, mode)
+        post_to_discord(config, next_talk, seminar, mode)
     else:
-        debug(config, "No upcoming talk")
+        debug(config, f"{seminar.name}: No upcoming talk")
 
 
-def check_abstract(config):
+def check_abstract(config, seminar):
     next_talk = get_next_talk(config)
 
     if next_talk is not None:
         template = "abstract.txt"
-        email = write_email(config, template, next_talk)
+        email = write_email(config, seminar, template, next_talk)
 
-        send_email(config, next_talk, email, ABSTRACT)
+        send_email(config, next_talk, seminar, email, ABSTRACT)
     else:
-        debug(config, "No upcoming talk")
+        debug(config, f"{seminar.name}: No upcoming talk")
 
 
 def main(config_file, log_file):
@@ -44,29 +44,33 @@ def main(config_file, log_file):
 
     config = load_config(config_file, log_file)
 
-    if today.weekday() == config.announce.day:
-        mode = ANNOUNCE
-        time = config.announce.time
-    elif today.weekday() == config.reminder.day:
-        mode = REMINDER
-        time = config.reminder.time
-    elif today.weekday() == config.abstract.day:
-        mode = ABSTRACT
-        time = config.abstract.time
-    else:
-        debug(config, "Not the right day to send an email")
-        exit(0)
-    # Parse the time from the config
-    time = datetime.datetime.strptime(time, "%H:%M")
-    # We can't be too precise as it might take a few seconds to load the script
-    if today.hour == time.hour and today.min == time.min:
-        if mode == ABSTRACT:
-            check_abstract(config)
+    for seminar in config.seminars:
+
+        if today.weekday() == seminar.announce.day:
+            mode = ANNOUNCE
+            time = seminar.announce.time
+        elif today.weekday() == seminar.reminder.day:
+            mode = REMINDER
+            time = seminar.reminder.time
+        elif today.weekday() == seminar.abstract.day:
+            mode = ABSTRACT
+            time = seminar.abstract.time
         else:
-            find_talk_and_send_email(config, mode)
-    else:
-        debug(config, "Not the right time to send an email")
-        exit(0)
+            debug(
+                config, f"{seminar.name}: Not the right day to send an email")
+            continue
+        # Parse the time from the config
+        time = datetime.datetime.strptime(time, "%H:%M")
+        # We can't be too precise as it might take a few seconds to load the script
+        if today.hour == time.hour and today.min == time.min:
+            if mode == ABSTRACT:
+                check_abstract(config, seminar)
+            else:
+                find_talk_and_send_email(config, seminar, mode)
+        else:
+            debug(
+                config, f"{seminar.name}: Not the right time to send an email")
+            continue
 
 
 if __name__ == "__main__":

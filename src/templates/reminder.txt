@@ -1,7 +1,7 @@
 Hi all
 
-Just a reminder that {{ talk.speaker }} will be giving a talk today, 
-{{ talk.get_mid_datetime() }}, at {{ talk.start }}.
+Just a reminder that {{ talk.speaker }} will be giving a {{ talk.series }}
+talk today, {{ talk.get_mid_datetime() }}, at {{ talk.start }}.
 
 {% include "talk_details.txt" %}
 
