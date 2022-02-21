@@ -97,6 +97,7 @@ class Config:
         self.admin = AdminDetails(yaml["admin"])
         self.talk_day = yaml["talk_day"]
         self.talk_day_name = calendar.day_name[self.talk_day]
+        self.discord = yaml["discord"]
 
         self.announce = get_daytime_from_offset(
             yaml.get("announce"), default_announce_offset, default_announce_time, self.talk_day)
@@ -155,6 +156,9 @@ def check_config(config):
             return "admin.email"
     else:
         return "admin"
+
+    if "discord" not in config:
+        return "discord"
 
     return ""
 

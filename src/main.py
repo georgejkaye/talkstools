@@ -4,6 +4,7 @@ from config import load_config, ANNOUNCE, REMINDER, ABSTRACT
 from scraper import get_next_talk
 from emails import write_email, send_email
 from debug import debug
+from bot import post_to_discord
 import datetime
 import sys
 
@@ -20,6 +21,7 @@ def find_talk_and_send_email(config, mode):
     if next_talk is not None:
         email = write_email(config, template, next_talk)
         send_email(config, next_talk, email, mode)
+        post_to_discord(config, next_talk, mode)
     else:
         debug(config, "No upcoming talk")
 

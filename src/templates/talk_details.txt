@@ -5,11 +5,11 @@
 {{ talk.get_long_datetime() }}
 {{ talk.link }}
 
-* Local venue: {{ room }}
+* Local venue: {{ config.room }}
 * Zoom link: {{ config.zoom.link }}
 * Meeting ID: {{ config.zoom.id }}
 * Password: {{ config.zoom.password }}
 
-{{ talk.abstract }}
+{{ talk.wrapped_abstract }}
 
 ***************************************

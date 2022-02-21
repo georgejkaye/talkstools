@@ -1,0 +1,6 @@
+**Talk details**
+
+**Local venue:** {{ room }}
+**Zoom link:** {{ config.zoom.link }}
+**Meeting ID:** {{ config.zoom.id }}
+**Password:** {{ config.zoom.password }}

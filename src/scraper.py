@@ -27,8 +27,9 @@ def wrap_string(string, width):
 
 
 class Talk:
-    def __init__(self, config, title, speaker, speaker_email, institution, link, date, start, end, abstract):
+    def __init__(self, config, title, series, speaker, speaker_email, institution, link, date, start, end, abstract):
         self.title = title
+        self.series = series
         self.speaker = speaker
         self.email = speaker_email
         self.institution = institution
@@ -42,7 +43,8 @@ class Talk:
 
         self.start = start
         self.end = end
-        self.abstract = wrap_string(abstract, line_width)
+        self.abstract = abstract
+        self.wrapped_abstract = wrap_string(abstract, line_width)
         self.has_missing_components = self.title == "Title to be confirmed" or self.abstract == "Abstract not available"
 
     def get_long_datetime(self):
@@ -91,6 +93,7 @@ def in_next_days(date, range):
 
 def get_next_talk(config):
     bravo_page = get_talks_xml_url(config.id)
+    talk_series = "Bravo"
 
     upcoming_talks = make_request(config, bravo_page)
 
@@ -133,5 +136,5 @@ def get_next_talk(config):
         else:
             abstract_string = split_at_abstract_tag[0]
 
-        return Talk(config, talk_title, talk_speaker, talk_speaker_email, talk_institution, talk_link, talk_date, talk_start, talk_end, abstract_string)
+        return Talk(config, talk_title, talk_series, talk_speaker, talk_speaker_email, talk_institution, talk_link, talk_date, talk_start, talk_end, abstract_string)
     return None

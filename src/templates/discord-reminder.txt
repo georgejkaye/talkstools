@@ -1,0 +1,1 @@
+@everyone Just a reminder that **{{ talk.speaker }}** will be giving a **{{ talk.series }}** talk about **'{{ talk.title }}'** at **{{ talk.start }}**.

@@ -1,0 +1,7 @@
+@everyone The next **{{ talk.series }}** talk will be taking place on **{{ talk.get_mid_datetime() }}**.
+
+**{{ talk.title }}**
+*{{ talk.speaker }} ({{ talk.institution }})*
+**{{ talk.get_long_datetime() }}**
+{{ talk.link }}
+** **

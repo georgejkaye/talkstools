@@ -17,6 +17,8 @@ smtp:
   port:
   user:
   password:
+// Discord token, found at https://discord.com/developers/applications
+discord:
 sender_email:
 recipient_email:
 zoom:

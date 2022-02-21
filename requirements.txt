@@ -1,5 +1,5 @@
 bs4
 requests
 Jinja2
-jsoncparser
 yaml
+discord.py
