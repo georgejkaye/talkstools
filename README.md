@@ -1,6 +1,6 @@
-# bravo-emails
+# talks-bot
 
-Sending automated emails for the University of Birmingham Theory Group PhD seminar, Bravo.
+Sending automated emails and discord messages for various seminar series.
 
 ## Configuration
 
@@ -8,7 +8,6 @@ Before using the scripts, you must configure them using a `yml` file.
 
 ```yml
 // The numbers after http://talks.bham.ac.uk/show/index/
-talks_id: 
 admin:
   name: 
   email:
@@ -19,27 +18,29 @@ smtp:
   password:
 // Discord token, found at https://discord.com/developers/applications
 discord:
-sender_email:
-recipient_email:
-zoom:
-  link:
-  id:
-  password:
-room:
-// The day the talk takes place on, 0 is Monday ... 4 is Friday
-talk_day:
-// Announcement emails are sent to let people know the talk is happening
-announce:
-  days_before: 2
-  time: 10:00
-// Reminder emails are sent shortly before the talk takes place
-reminder:
-  days_before: 0,
-  time: 10:00
-// Abstract emails are sent to the speaker shortly before announcement
-abstract:
-  days_before: 1 
-  time: 10:00
+seminars:
+  - series:
+    talks_id:
+    mailing_list:
+    // The day the talk takes place on, 0 is Monday ... 4 is Friday
+    talk_day:
+    zoom:
+      link:
+      id:
+      password:
+    room:
+    // Announcement emails are sent to let people know the talk is happening
+    announce:
+      days_before: 2
+      time: 10:00
+    // Reminder emails are sent shortly before the talk takes place
+    reminder:
+      days_before: 0,
+      time: 10:00
+    // Abstract emails are sent to the speaker shortly before announcement
+    abstract:
+      days_before: 1 
+      time: 10:00
 ```
 
 ## Usage
@@ -70,4 +71,5 @@ To test the scripts, or simply run them at an arbitrary time, some supplementary
 ```sh
 python3 src/announce.py config logfile
 python3 src/reminder.py config logfile
+python3 src/abstract.py config logfile
 ```
