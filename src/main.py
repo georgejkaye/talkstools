@@ -27,7 +27,7 @@ def find_talk_and_send_email(config, seminar, mode):
 
 
 def check_abstract(config, seminar):
-    next_talk = get_next_talk(config)
+    next_talk = get_next_talk(config, seminar)
 
     if next_talk is not None:
         template = "abstract.txt"
