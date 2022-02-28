@@ -91,6 +91,7 @@ class Series:
         self.talks_id = yaml["talks_id"]
         self.page = get_talks_page(self.talks_id)
         self.mailing_list = yaml["mailing_list"]
+        self.channel = yaml["channel"]
         self.talk_day = yaml["talk_day"]
         self.talk_day_name = calendar.day_name[self.talk_day]
         self.zoom = ZoomDetails(yaml["zoom"])

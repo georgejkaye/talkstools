@@ -24,6 +24,8 @@ seminars:
     mailing_list:
     // The day the talk takes place on, 0 is Monday ... 4 is Friday
     talk_day:
+    // The channel on the discord server to post the announcements in
+    channel:
     zoom:
       link:
       id:
