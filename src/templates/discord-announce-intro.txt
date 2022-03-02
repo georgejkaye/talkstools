@@ -5,4 +5,3 @@
 **{{ talk.get_long_datetime() }}**
 
 For more details, see {{ talk.link }}
-** **
