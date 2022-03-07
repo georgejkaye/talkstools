@@ -71,7 +71,7 @@ Setting up the script in this way will send an email at `config["announce_time"]
 To test the scripts, or simply run them at an arbitrary time, some supplementary scripts are also provided.
 
 ```sh
-python3 src/announce.py config logfile
+python3 src/announces.py config logfile
 python3 src/reminder.py config logfile
 python3 src/abstract.py config logfile
 ```

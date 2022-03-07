@@ -74,8 +74,9 @@ def get_speaker_page(id):
     return f"{talks_url_base}/user/show/{id}"
 
 
-def get_talks_xml_url(id):
-    return f"{talks_url_base}/show/xml/{id}"
+def get_talks_xml_url(id, range):
+    seconds = range * 86400
+    return f"{talks_url_base}/show/xml/{id}?seconds_before_today=0&seconds_after_today={seconds}"
 
 
 def make_request(config, link):
@@ -95,8 +96,9 @@ def in_next_days(date, range):
 
 
 def get_next_talk(config, seminar):
-    seminar_page = get_talks_xml_url(seminar.talks_id)
-    talk_series = seminar.name
+    # We only want to get seminars happening in the next week
+    days_to_search = 6
+    seminar_page = get_talks_xml_url(seminar.talks_id, days_to_search)
 
     upcoming_talks = make_request(config, seminar_page)
 

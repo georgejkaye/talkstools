@@ -1,6 +1,6 @@
 ***************************************
 
-{{ talk.title.upper() }}
+{{ talk.title }}
 {{ talk.speaker }} ({{ talk.institution }})
 {{ talk.get_long_datetime() }}
 {{ talk.link }}
