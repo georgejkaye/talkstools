@@ -35,43 +35,45 @@ def send_email(config, talk, seminar, email, mode):
         email_recipient = seminar.mailing_list
         email_cc = talk.email
 
-    smtp_host = config.smtp.host
-    smtp_port = config.smtp.port
-    smtp_user = config.smtp.user
-    smtp_password = config.smtp.password
+    if email_recipient is not None:
+        smtp_host = config.smtp.host
+        smtp_port = config.smtp.port
+        smtp_user = config.smtp.user
+        smtp_password = config.smtp.password
 
-    message = MIMEMultipart("alternative")
+        message = MIMEMultipart("alternative")
 
-    if mode == ABSTRACT:
-        subject = f"Your upcoming { talk.series } talk, { talk.get_short_datetime() }"
-    else:
-        subject = f"{ talk.series } talk by { talk.speaker }, { talk.get_short_datetime() }"
-        if mode == REMINDER:
-            subject = f"Reminder: " + subject
+        if mode == ABSTRACT:
+            subject = f"Your upcoming { talk.series } talk, { talk.get_short_datetime() }"
+        else:
+            subject = f"{ talk.series } talk by { talk.speaker }, { talk.get_short_datetime() }"
+            if mode == REMINDER:
+                subject = f"Reminder: " + subject
 
-    message["Subject"] = subject
+        message["Subject"] = subject
 
-    message["From"] = email_sender
-    message["To"] = email_recipient
-    if email_cc is not None:
-        message["Cc"] = email_cc
-    text = MIMEText(email, "plain")
-    message.attach(text)
+        message["From"] = email_sender
+        message["To"] = email_recipient
+        if email_cc is not None:
+            message["Cc"] = email_cc
+        text = MIMEText(email, "plain")
+        message.attach(text)
 
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as server:
-        try:
-            server.login(smtp_user, smtp_password)
-        except Exception as e:
-            debug(config,
-                  f"Error logging into server {smtp_host}:{smtp_port} as user {smtp_user}: {e.smtp_code} {e.smtp_error.decode('UTF-8')}")
-            exit(1)
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as server:
+            try:
+                server.login(smtp_user, smtp_password)
+            except Exception as e:
+                debug(config,
+                      f"Error logging into server {smtp_host}:{smtp_port} as user {smtp_user}: {e.smtp_code} {e.smtp_error.decode('UTF-8')}")
+                exit(1)
 
-        try:
-            server.sendmail(email_sender, email_recipient, message.as_string())
-        except Exception as e:
-            debug(config,
-                  f"Error sending email from server {smtp_host}:{smtp_port} as user {smtp_user}: {e.smtp_code} {e.smtp_error.decode('UTF-8')}")
-            exit(1)
+            try:
+                server.sendmail(email_sender, email_recipient,
+                                message.as_string())
+            except Exception as e:
+                debug(config,
+                      f"Error sending email from server {smtp_host}:{smtp_port} as user {smtp_user}: {e.smtp_code} {e.smtp_error.decode('UTF-8')}")
+                exit(1)
 
-    debug(config, f"Sent email to {email_recipient}")
+        debug(config, f"Sent email to {email_recipient}")
