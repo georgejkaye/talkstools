@@ -7,7 +7,7 @@ from html import unescape
 from debug import debug
 
 datetime_regex = r'([A-Za-z]+) ([0-3][0-9]) ([A-Za-z]+) ([0-9][0-9][0-9][0-9]), ([0-2][0-9]:[0-5][0-9])-([0-2][0-9]:[0-5][0-9])'
-speaker_regex = r'([A-Za-z ]+) (\((.*)\))?'
+speaker_regex = r'(.+) (?:\((.*)\))?'
 speaker_url_regex = r'\"\/user\/show\/([0-9]*)\"'
 
 line_width = 80
@@ -119,7 +119,7 @@ def get_next_talk(config, seminar):
         # file that we can use.  Make sure these emails are in the public domain to
         # keep in line with GDPR regulations!
         talk_speaker_email = config.emails.get(talk_speaker)
-        talk_institution = speaker_matches.group(3)
+        talk_institution = speaker_matches.group(2)
         talk_link = talk.find("url").text
         talk_start_date_and_time = talk.find("start_time").text
         date_string = talk_start_date_and_time[0:-15]
