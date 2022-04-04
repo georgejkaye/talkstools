@@ -1,4 +1,5 @@
 import re
+from more_itertools import split_at
 import requests
 from datetime import datetime, timedelta
 import xml.etree.ElementTree as ET
@@ -7,7 +8,6 @@ from html import unescape
 from debug import debug
 
 datetime_regex = r'([A-Za-z]+) ([0-3][0-9]) ([A-Za-z]+) ([0-9][0-9][0-9][0-9]), ([0-2][0-9]:[0-5][0-9])-([0-2][0-9]:[0-5][0-9])'
-speaker_regex = r'(.+) (?:\((.*)\))?'
 speaker_url_regex = r'\"\/user\/show\/([0-9]*)\"'
 
 line_width = 80
@@ -49,6 +49,11 @@ class Talk:
         self.abstract = abstract
         self.wrapped_abstract = wrap_string(abstract, line_width)
         self.has_missing_components = self.title == "Title to be confirmed" or self.abstract == "Abstract not available"
+
+    def get_institution(self):
+        if self.institution is None:
+            return ""
+        return f"({self.institution})S"
 
     def get_long_datetime(self):
         return datetime.strftime(self.date, "%A %d %B %Y") + ", " + self.start + "-" + self.end
@@ -110,9 +115,24 @@ def get_next_talk(config, seminar):
     if talk is not None:
         talk_title = unescape(talk.find("title").text)
         talk_speaker_and_institution = talk.find("speaker").text
-        speaker_matches = re.search(
-            speaker_regex, talk_speaker_and_institution)
-        talk_speaker = speaker_matches.group(1)
+
+        # Usually the speaker field has an institution in brackets alongside
+        # the actual speaker name. We need to strip this off, so we search
+        # for the bracket. However, the brackets might not be there in the
+        # first place as not all speakers have institutions, and not all
+        # list admins are big brain enough to put them in. Moreover, sometimes
+        # there might be additional brackets in the field, if the speaker
+        # has a nickname or something. I'm not sure if this handles all the
+        # cases but I guess we'll see.
+        split_at_bracket = talk_speaker_and_institution.split("(")
+
+        if len(split_at_bracket) == 0:
+            talk_speaker = split_at_bracket[:-1]
+            talk_institution = None
+        else:
+            talk_institution = split_at_bracket[-1][:-1]
+            talk_speaker = "(".join(split_at_bracket[:-1])
+
         # Unfortunately (and probably sensibly) you can't get emails from talks
         # unless you're logged in, and I don't know how to do that from within
         # this python script. Instead, we just keep a list of emails in the config
