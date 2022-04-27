@@ -110,55 +110,63 @@ def get_next_talk(config, seminar):
     tree = ET.ElementTree(ET.fromstring(upcoming_talks))
     root = tree.getroot()
 
-    talk = root.find("talk")
+    series_name = root.find("name").text
 
-    if talk is not None:
-        talk_title = unescape(talk.find("title").text)
-        talk_speaker_and_institution = talk.find("speaker").text
+    talks = root.findall("talk")
 
-        # Usually the speaker field has an institution in brackets alongside
-        # the actual speaker name. We need to strip this off, so we search
-        # for the bracket. However, the brackets might not be there in the
-        # first place as not all speakers have institutions, and not all
-        # list admins are big brain enough to put them in. Moreover, sometimes
-        # there might be additional brackets in the field, if the speaker
-        # has a nickname or something. I'm not sure if this handles all the
-        # cases but I guess we'll see.
-        split_at_bracket = talk_speaker_and_institution.split("(")
+    for talk in talks:
+        # Talks can be crossposted between lists so this means that talks
+        # not in the 'core' series can be overridden by closer 'bonus' talks
+        # So we need to check it's in the right series
+        if talk is not None and talk.find("series").text == series_name:
 
-        if len(split_at_bracket) == 1:
-            talk_speaker = split_at_bracket[0]
-            talk_institution = None
-        else:
-            talk_institution = split_at_bracket[-1][:-1]
-            talk_speaker = "(".join(split_at_bracket[:-1])[:-1]
+            talk_title = unescape(talk.find("title").text)
+            talk_speaker_and_institution = talk.find("speaker").text
 
-        # Unfortunately (and probably sensibly) you can't get emails from talks
-        # unless you're logged in, and I don't know how to do that from within
-        # this python script. Instead, we just keep a list of emails in the config
-        # file that we can use.  Make sure these emails are in the public domain to
-        # keep in line with GDPR regulations!
-        talk_speaker_email = config.emails.get(talk_speaker)
-        talk_link = talk.find("url").text
-        talk_start_date_and_time = talk.find("start_time").text
-        date_string = talk_start_date_and_time[0:-15]
-        talk_date = datetime.strptime(
-            date_string, "%a, %d %b %Y")
-        talk_start = talk_start_date_and_time[-14:-9]
-        talk_end = talk.find("end_time").text[-14:-9]
-        abstract_string = talk.find("abstract").text
+            # Usually the speaker field has an institution in brackets alongside
+            # the actual speaker name. We need to strip this off, so we search
+            # for the bracket. However, the brackets might not be there in the
+            # first place as not all speakers have institutions, and not all
+            # list admins are big brain enough to put them in. Moreover, sometimes
+            # there might be additional brackets in the field, if the speaker
+            # has a nickname or something. I'm not sure if this handles all the
+            # cases but I guess we'll see.
+            split_at_bracket = talk_speaker_and_institution.split("(")
 
-        # In a perfect world we would have separate fields for all the zoom stuff.
-        # Unfortunately talks was made in the noughties and there were no major global
-        # pandemics at that point. As a workaround I try to have an *Abstract* tag to
-        # distinguish where the abstract proper starts. If this is found, then all the
-        # text after this will be put in. Otherwise, the whole textbox will be dumped in.
-        split_at_abstract_tag = abstract_string.split("*Abstract*\n\n")
+            if len(split_at_bracket) == 1:
+                talk_speaker = split_at_bracket[0]
+                talk_institution = None
+            else:
+                talk_institution = split_at_bracket[-1][:-1]
+                talk_speaker = "(".join(split_at_bracket[:-1])[:-1]
 
-        if len(split_at_abstract_tag) > 1:
-            abstract_string = split_at_abstract_tag[-1]
-        else:
-            abstract_string = split_at_abstract_tag[0]
+            # Unfortunately (and probably sensibly) you can't get emails from talks
+            # unless you're logged in, and I don't know how to do that from within
+            # this python script. Instead, we just keep a list of emails in the config
+            # file that we can use.  Make sure these emails are in the public domain to
+            # keep in line with GDPR regulations!
+            talk_speaker_email = config.emails.get(talk_speaker)
+            talk_link = talk.find("url").text
+            talk_start_date_and_time = talk.find("start_time").text
+            date_string = talk_start_date_and_time[0:-15]
+            talk_date = datetime.strptime(
+                date_string, "%a, %d %b %Y")
+            talk_start = talk_start_date_and_time[-14:-9]
+            talk_end = talk.find("end_time").text[-14:-9]
+            abstract_string = talk.find("abstract").text
 
-        return Talk(config, seminar, talk_title, talk_speaker, talk_speaker_email, talk_institution, talk_link, talk_date, talk_start, talk_end, abstract_string)
+            # In a perfect world we would have separate fields for all the zoom stuff.
+            # Unfortunately talks was made in the noughties and there were no major global
+            # pandemics at that point. As a workaround I try to have an *Abstract* tag to
+            # distinguish where the abstract proper starts. If this is found, then all the
+            # text after this will be put in. Otherwise, the whole textbox will be dumped in.
+            split_at_abstract_tag = abstract_string.split("*Abstract*\n\n")
+
+            if len(split_at_abstract_tag) > 1:
+                abstract_string = split_at_abstract_tag[-1]
+            else:
+                abstract_string = split_at_abstract_tag[0]
+
+            return Talk(config, seminar, talk_title, talk_speaker, talk_speaker_email, talk_institution, talk_link, talk_date, talk_start, talk_end, abstract_string)
+
     return None
