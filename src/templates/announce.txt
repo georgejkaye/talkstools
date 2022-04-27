@@ -2,7 +2,7 @@ Hi all
 
 This week's {{ talk.series }} talk will be presented by {{ talk.speaker }}.
 
-{% include "talk_details.txt" %}
+{% include "full-details.txt" %}
 
 Hope to see you all there!
 

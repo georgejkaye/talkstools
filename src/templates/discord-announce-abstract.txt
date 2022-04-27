@@ -1,4 +1,0 @@
-**Abstract** 
-
-{{ talk.abstract }}
-** **

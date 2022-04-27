@@ -1,8 +1,2 @@
 Best
 {{ config.admin.name }}
-
------
-
-Bravo
-{{ config.page }}
-{{ config.admin.email }}

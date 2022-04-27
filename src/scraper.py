@@ -126,12 +126,12 @@ def get_next_talk(config, seminar):
         # cases but I guess we'll see.
         split_at_bracket = talk_speaker_and_institution.split("(")
 
-        if len(split_at_bracket) == 0:
-            talk_speaker = split_at_bracket[:-1]
+        if len(split_at_bracket) == 1:
+            talk_speaker = split_at_bracket[0]
             talk_institution = None
         else:
             talk_institution = split_at_bracket[-1][:-1]
-            talk_speaker = "(".join(split_at_bracket[:-1])
+            talk_speaker = "(".join(split_at_bracket[:-1])[:-1]
 
         # Unfortunately (and probably sensibly) you can't get emails from talks
         # unless you're logged in, and I don't know how to do that from within
@@ -139,7 +139,6 @@ def get_next_talk(config, seminar):
         # file that we can use.  Make sure these emails are in the public domain to
         # keep in line with GDPR regulations!
         talk_speaker_email = config.emails.get(talk_speaker)
-        talk_institution = speaker_matches.group(2)
         talk_link = talk.find("url").text
         talk_start_date_and_time = talk.find("start_time").text
         date_string = talk_start_date_and_time[0:-15]

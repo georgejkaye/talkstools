@@ -11,7 +11,7 @@ def post_to_discord(config, talk, seminar, mode):
 
     if mode == ANNOUNCE:
         intro = write_email(
-            config, seminar, "discord-announce-intro.txt", talk)
+            config, seminar, "discord-announce.txt", talk)
         messages = [intro]
     elif mode == REMINDER:
         message = write_email(config, seminar, "discord-reminder.txt", talk)

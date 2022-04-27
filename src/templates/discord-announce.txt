@@ -1,7 +1,5 @@
 @everyone **{{ talk.speaker }}** will be giving the next **{{ talk.series }}** talk on **{{ talk.get_mid_datetime() }}**.
 
-**{{ talk.title }}**
-*{{ talk.speaker }} ({{ talk.institution }})*
-**{{ talk.get_long_datetime() }}**
+{% include "title-and-speaker.txt" %}
 
 For more details, see {{ talk.link }}
