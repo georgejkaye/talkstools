@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from config import load_config, ANNOUNCE, REMINDER, ABSTRACT
+from config import GENERATE, load_config, ANNOUNCE, REMINDER, ABSTRACT
 from scraper import get_next_talk
 from emails import write_email, send_email
 from debug import debug
@@ -11,7 +11,7 @@ import sys
 
 def find_talk_and_send_email(config, seminar, mode):
 
-    if mode == ANNOUNCE:
+    if mode == ANNOUNCE or mode == GENERATE:
         template = "announce.txt"
     elif mode == REMINDER:
         template = "reminder.txt"
@@ -20,8 +20,11 @@ def find_talk_and_send_email(config, seminar, mode):
 
     if next_talk is not None:
         email = write_email(config, seminar, template, next_talk)
-        send_email(config, next_talk, seminar, email, mode)
-        post_to_discord(config, next_talk, seminar, mode)
+        if mode == GENERATE:
+            print(email)
+        else:
+            send_email(config, next_talk, seminar, email, mode)
+            post_to_discord(config, next_talk, seminar, mode)
     else:
         debug(config, f"{seminar.name}: No upcoming talk")
 

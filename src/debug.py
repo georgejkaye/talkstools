@@ -2,12 +2,16 @@ import datetime
 
 
 def debug(config, string):
-    if isinstance(config, str):
-        log = config
-    else:
-        log = config.log
+    if config is not None:
+        if isinstance(config, str):
+            log = config
+        else:
+            if config.log is not None:
+                log = config.log
+            else:
+                return
 
-    with open(log, "a+") as log:
-        now = datetime.datetime.now()
-        timestring = now.strftime("%d-%m-%y %H:%M:%S")
-        log.write(f"[{timestring}] {string}\n")
+        with open(log, "a+") as log:
+            now = datetime.datetime.now()
+            timestring = now.strftime("%d-%m-%y %H:%M:%S")
+            log.write(f"[{timestring}] {string}\n")

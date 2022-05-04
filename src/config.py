@@ -7,6 +7,7 @@ import calendar
 ANNOUNCE = 0
 REMINDER = 1
 ABSTRACT = 2
+GENERATE = 3
 
 
 class ZoomDetails:
@@ -111,6 +112,8 @@ class Config:
         self.discord = yaml["discord"]
         if "emails" in yaml:
             self.emails = yaml["emails"]
+        else:
+            self.emails = {}
         self.log = log_file
         self.seminars = []
         for seminar in yaml["seminars"]:

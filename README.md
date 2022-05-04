@@ -2,6 +2,14 @@
 
 Sending automated emails and discord messages for various seminar series.
 
+## Prerequisites
+
+You can install the prerequisites with `pip`.
+
+```python
+pip install -r requirements.txt
+```
+
 ## Configuration
 
 Before using the scripts, you must configure them using a `yml` file.
