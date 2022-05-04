@@ -32,8 +32,7 @@ class SMTPDetails:
 
 
 class Daytime:
-    def __init__(self, day, time, offset=0):
-        self.day = day
+    def __init__(self, time, offset=0):
         self.time = time
         self.days_before = offset
 
@@ -45,7 +44,7 @@ def get_offset_day(day, offset):
     return day
 
 
-def get_daytime_from_offset(yaml, default_offset, default_time, origin):
+def get_daytime_from_offset(yaml, default_offset, default_time):
     if yaml is None:
         offset = default_offset
         time = default_time
@@ -58,8 +57,8 @@ def get_daytime_from_offset(yaml, default_offset, default_time, origin):
             time = yaml["time"]
         else:
             time = default_time
-    day = get_offset_day(origin, offset)
-    return Daytime(day, time, offset)
+    day = get_offset_day(time, offset)
+    return Daytime(time, offset)
 
 
 def get_daytime(yaml, default_day, default_time):
@@ -79,11 +78,11 @@ def get_daytime(yaml, default_day, default_time):
 
 
 default_announce_offset = 2
-default_announce_time = "10:00"
+default_announce_time = "10"
 default_reminder_offset = 0
-default_reminder_time = "10:00"
+default_reminder_time = "10"
 default_abstract_offset = 1
-default_abstract_time = "10:00"
+default_abstract_time = "10"
 
 
 class Series:
@@ -93,16 +92,12 @@ class Series:
         self.page = get_talks_page(self.talks_id)
         self.mailing_list = yaml["mailing_list"]
         self.channel = yaml["channel"]
-        self.talk_day = yaml["talk_day"]
-        self.talk_day_name = calendar.day_name[self.talk_day]
         self.zoom = ZoomDetails(yaml["zoom"])
         self.room = yaml["room"]
         self.announce = get_daytime_from_offset(
-            yaml.get("announce"), default_announce_offset, default_announce_time, self.talk_day)
+            yaml.get("announce"), default_announce_offset, default_announce_time)
         self.reminder = get_daytime_from_offset(
-            yaml.get("reminder"), default_reminder_offset, default_reminder_time, self.talk_day)
-        self.abstract = get_daytime_from_offset(yaml.get(
-            "abstract"), default_abstract_offset, default_abstract_time, self.announce.day)
+            yaml.get("reminder"), default_reminder_offset, default_reminder_time)
 
 
 class Config:
@@ -110,10 +105,6 @@ class Config:
         self.smtp = SMTPDetails(yaml["smtp"])
         self.admin = AdminDetails(yaml["admin"])
         self.discord = yaml["discord"]
-        if "emails" in yaml:
-            self.emails = yaml["emails"]
-        else:
-            self.emails = {}
         self.log = log_file
         self.seminars = []
         for seminar in yaml["seminars"]:

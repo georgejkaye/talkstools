@@ -5,11 +5,19 @@ from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from textwrap import wrap
-from config import ABSTRACT, REMINDER
 
 
-def write_email(config, seminar, template, talk):
+def write_and_send_email(config, seminar, talk, template, is_reminder, stdout):
+    email = write_email(config, seminar, talk, template)
+    if stdout:
+        print("\n==============================================\n")
+        print(email)
+        print("\n==============================================\n")
+    else:
+        send_email(config, seminar, talk, email, is_reminder)
+
+
+def write_email(config, seminar, talk, template):
 
     current_dir = Path(__file__).resolve().parent
     templates_dir = current_dir / "templates"
@@ -24,16 +32,10 @@ def write_email(config, seminar, template, talk):
     return email
 
 
-def send_email(config, talk, seminar, email, mode):
+def send_email(config, seminar, talk, email_content, is_reminder):
 
     email_sender = config.admin.email
-
-    if mode == ABSTRACT:
-        email_recipient = talk.email
-        email_cc = None
-    else:
-        email_recipient = seminar.mailing_list
-        email_cc = talk.email
+    email_recipient = seminar.mailing_list
 
     if email_recipient is not None:
         smtp_host = config.smtp.host
@@ -43,20 +45,15 @@ def send_email(config, talk, seminar, email, mode):
 
         message = MIMEMultipart("alternative")
 
-        if mode == ABSTRACT:
-            subject = f"Your upcoming { talk.series } talk, { talk.get_short_datetime() }"
-        else:
-            subject = f"{ talk.series } talk by { talk.speaker }, { talk.get_short_datetime() }"
-            if mode == REMINDER:
-                subject = f"Reminder: " + subject
+        subject = f"{ talk.series } talk by { talk.speaker }, { talk.get_short_datetime() }"
+        if is_reminder:
+            subject = f"Reminder: " + subject
 
         message["Subject"] = subject
 
         message["From"] = email_sender
         message["To"] = email_recipient
-        if email_cc is not None:
-            message["Cc"] = email_cc
-        text = MIMEText(email, "plain")
+        text = MIMEText(email_content, "plain")
         message.attach(text)
 
         context = ssl.create_default_context()

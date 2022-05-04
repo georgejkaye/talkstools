@@ -27,22 +27,25 @@ def wrap_string(string, width):
 
 
 class Talk:
-    def __init__(self, config, seminar, title, speaker, speaker_email, institution, link, date, start, end, abstract):
+    def __init__(self, seminar, title, speaker, institution, link, date, start, end, abstract):
         self.title = title
         self.series = seminar.name
         self.speaker = speaker
-        self.email = speaker_email
         self.institution = institution
         self.link = link
         self.date = date
         self.room = seminar.room
         self.zoom = seminar.zoom
-        self.announce_date = date - \
+        self.announce_datetime = date - \
             timedelta(days=seminar.announce.days_before)
 
         # account for weekends
-        if self.announce_date.weekday() == 5 or self.announce_date.weekday() == 6:
-            self.announce_date = self.announce_date - timedelta(days=2)
+        if self.announce_datetime.weekday() == 5 or self.announce_datetime.weekday() == 6:
+            self.announce_datetime = self.announce_datetime - timedelta(days=2)
+
+        self.announce_datetime = self.announce_datetime.replace(
+            hour=seminar.announce.time)
+        self.reminder_datetime = date.replace(hour=seminar.reminder.time)
 
         self.start = start
         self.end = end
@@ -140,12 +143,6 @@ def get_next_talk(config, seminar):
                 talk_institution = split_at_bracket[-1][:-1]
                 talk_speaker = "(".join(split_at_bracket[:-1])[:-1]
 
-            # Unfortunately (and probably sensibly) you can't get emails from talks
-            # unless you're logged in, and I don't know how to do that from within
-            # this python script. Instead, we just keep a list of emails in the config
-            # file that we can use.  Make sure these emails are in the public domain to
-            # keep in line with GDPR regulations!
-            talk_speaker_email = config.emails.get(talk_speaker)
             talk_link = talk.find("url").text
             talk_start_date_and_time = talk.find("start_time").text
             date_string = talk_start_date_and_time[0:-15]
@@ -167,6 +164,6 @@ def get_next_talk(config, seminar):
             else:
                 abstract_string = split_at_abstract_tag[0]
 
-            return Talk(config, seminar, talk_title, talk_speaker, talk_speaker_email, talk_institution, talk_link, talk_date, talk_start, talk_end, abstract_string)
+            return Talk(seminar, talk_title, talk_speaker, talk_institution, talk_link, talk_date, talk_start, talk_end, abstract_string)
 
     return None

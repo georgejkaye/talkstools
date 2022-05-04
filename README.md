@@ -29,9 +29,8 @@ discord:
 seminars:
   - series:
     talks_id:
+    // The list to send the emails to
     mailing_list:
-    // The day the talk takes place on, 0 is Monday ... 4 is Friday
-    talk_day:
     // The channel on the discord server to post the announcements in
     channel:
     zoom:
@@ -42,15 +41,10 @@ seminars:
     // Announcement emails are sent to let people know the talk is happening
     announce:
       days_before: 2
-      time: 10:00
+      time: 10
     // Reminder emails are sent shortly before the talk takes place
     reminder:
-      days_before: 0,
-      time: 10:00
-    // Abstract emails are sent to the speaker shortly before announcement
-    abstract:
-      days_before: 1 
-      time: 10:00
+      time: 10
 ```
 
 ## Usage
@@ -72,14 +66,15 @@ and add this line
 
 where `main`, `config` and `logfile` are replaced with the locations of the `main.py` file, your config file, and where you want the logs to go.
 
-Setting up the script in this way will send an email at `config["announce_time"]` on Monday with the details of that week's talk (if one is happening), and again at `config["reminder_time"]` on the day of the talk.
+Setting up the script in this way will send an email at `announce.time` on `announce.days_before` before the talk containing the details, and again at `reminder.time` on the day of the talk.
 
 ### Supplementary scripts
 
 To test the scripts, or simply run them at an arbitrary time, some supplementary scripts are also provided.
 
 ```sh
-python3 src/announces.py config logfile
+python3 src/announce.py config logfile
 python3 src/reminder.py config logfile
-python3 src/abstract.py config logfile
 ```
+
+You can append `--stdout` to either script to print the emails to standard output rather than sending them or posting messages to discord.

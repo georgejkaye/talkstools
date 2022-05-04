@@ -4,17 +4,17 @@ from config import REMINDER, ANNOUNCE
 from debug import debug
 
 
-def post_to_discord(config, talk, seminar, mode):
+def post_to_discord(config, seminar, talk, mode):
 
     client = discord.Client()
     channel_name = seminar.channel
 
     if mode == ANNOUNCE:
         intro = write_email(
-            config, seminar, "discord-announce.txt", talk)
+            config, seminar, talk, "discord-announce.txt")
         messages = [intro]
     elif mode == REMINDER:
-        message = write_email(config, seminar, "discord-reminder.txt", talk)
+        message = write_email(config, seminar, talk, "discord-reminder.txt")
         messages = [message]
     else:
         debug(config, "Mode not configured to send discord messages.")
@@ -29,4 +29,7 @@ def post_to_discord(config, talk, seminar, mode):
             await channel.send(message)
         await client.close()
 
-    client.run(config.discord)
+    try:
+        client.run(config.discord)
+    except:
+        pass
