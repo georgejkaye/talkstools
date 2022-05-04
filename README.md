@@ -50,7 +50,7 @@ seminars:
 ## Usage
 
 To maximise the effectiveness of this script, it should be run as a `cron` job.
-It can be as frequent as you like, but once every hour should be fine.
+It can be as frequent as you like, but running it more than once an hour will result in duplicate emails being sent!
 
 To access your crontab use
 
