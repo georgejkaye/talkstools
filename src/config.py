@@ -146,8 +146,6 @@ def check_config(config):
                 return "talks_id"
             if "mailing_list" not in seminar:
                 return "mailing_list"
-            if "talk_day" not in seminar:
-                return "talk_day"
             if "zoom" in seminar:
                 zoom = seminar["zoom"]
                 if "link" not in zoom:
