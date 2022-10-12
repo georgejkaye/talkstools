@@ -53,10 +53,13 @@ class Talk:
         self.wrapped_abstract = wrap_string(abstract, line_width)
         self.has_missing_components = self.title == "Title to be confirmed" or self.abstract == "Abstract not available"
 
-    def get_institution(self):
+    def get_institution(self, space):
         if self.institution is None:
             return ""
-        return f"({self.institution})S"
+        bracketed = f"({self.institution})S"
+        if space:
+            return f" {bracketed}"
+        return bracketed
 
     def get_long_datetime(self):
         return datetime.strftime(self.date, "%A %d %B %Y") + ", " + self.start + "-" + self.end
@@ -122,10 +125,8 @@ def get_next_talk(config, seminar):
         # not in the 'core' series can be overridden by closer 'bonus' talks
         # So we need to check it's in the right series
         if talk is not None and talk.find("series").text == series_name:
-
             talk_title = unescape(talk.find("title").text)
             talk_speaker_and_institution = talk.find("speaker").text
-
             # Usually the speaker field has an institution in brackets alongside
             # the actual speaker name. We need to strip this off, so we search
             # for the bracket. However, the brackets might not be there in the
@@ -135,14 +136,12 @@ def get_next_talk(config, seminar):
             # has a nickname or something. I'm not sure if this handles all the
             # cases but I guess we'll see.
             split_at_bracket = talk_speaker_and_institution.split("(")
-
             if len(split_at_bracket) == 1:
                 talk_speaker = split_at_bracket[0]
                 talk_institution = None
             else:
                 talk_institution = split_at_bracket[-1][:-1]
                 talk_speaker = "(".join(split_at_bracket[:-1])[:-1]
-
             talk_link = talk.find("url").text
             talk_start_date_and_time = talk.find("start_time").text
             date_string = talk_start_date_and_time[0:-15]
@@ -164,6 +163,16 @@ def get_next_talk(config, seminar):
             else:
                 abstract_string = split_at_abstract_tag[0]
 
-            return Talk(seminar, talk_title, talk_speaker, talk_institution, talk_link, talk_date, talk_start, talk_end, abstract_string)
+            return Talk(
+                seminar,
+                talk_title,
+                talk_speaker,
+                talk_institution,
+                talk_link,
+                talk_date,
+                talk_start,
+                talk_end,
+                abstract_string
+            )
 
     return None
