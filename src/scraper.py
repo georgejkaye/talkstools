@@ -56,7 +56,7 @@ class Talk:
     def get_institution(self, space):
         if self.institution is None:
             return ""
-        bracketed = f"({self.institution})S"
+        bracketed = f"({self.institution})"
         if space:
             return f" {bracketed}"
         return bracketed
