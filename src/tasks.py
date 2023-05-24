@@ -2,7 +2,7 @@ import datetime
 
 from debug import debug
 from config import ANNOUNCE, REMINDER
-from emails import write_and_send_email
+from emails import prepare_email, write_and_send_email, write_email
 from bot import post_to_discord
 from scraper import get_next_talk
 
@@ -18,9 +18,8 @@ def get_template(config, mode):
 
 def announce_seminar(config, seminar, talk, stdout):
     template = get_template(config, ANNOUNCE)
-    write_and_send_email(config, seminar, talk, template, False, stdout)
-    if not stdout:
-        post_to_discord(config, seminar, talk, ANNOUNCE)
+    email = write_email(config, seminar, talk, template)
+    prepare_email(config, seminar, talk, email)
 
 
 def reminder_seminar(config, seminar, talk, stdout):

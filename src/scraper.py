@@ -10,7 +10,7 @@ from debug import debug
 datetime_regex = r'([A-Za-z]+) ([0-3][0-9]) ([A-Za-z]+) ([0-9][0-9][0-9][0-9]), ([0-2][0-9]:[0-5][0-9])-([0-2][0-9]:[0-5][0-9])'
 speaker_url_regex = r'\"\/user\/show\/([0-9]*)\"'
 
-line_width = 80
+line_width = 72
 
 
 def wrap_string(string, width):

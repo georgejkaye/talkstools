@@ -1,3 +1,4 @@
+import subprocess
 from debug import debug
 import smtplib
 import ssl
@@ -30,6 +31,19 @@ def write_email(config, seminar, talk, template):
     template = env.get_template(template)
     email = template.render(config=config, seminar=seminar, talk=talk)
     return email
+
+
+def prepare_email(config, seminar, talk, body) -> None:
+    to_item = f"to='{seminar.mailing_list}'"
+    from_item = f"from={config.admin.email}"
+    subject_item = f"subject='{ talk.series } talk by { talk.speaker }, { talk.get_short_datetime() }'"
+    body_item = f"body='{body}'"
+    plain_text_item = "format=2"
+    compose_items = ",".join(
+        [to_item, from_item, subject_item, body_item, plain_text_item])
+    quoted_compose_items = f"\"{compose_items}\""
+    command = f"thunderbird -compose {quoted_compose_items}"
+    subprocess.Popen(command, shell=True)
 
 
 def send_email(config, seminar, talk, email_content, is_reminder):
