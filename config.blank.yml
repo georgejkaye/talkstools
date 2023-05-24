@@ -1,0 +1,14 @@
+admin:
+  name:
+  email:
+discord:
+seminars:
+  - series:
+    talks_id:
+    mailing_list:
+    talk_day:
+    zoom:
+      link:
+      id:
+      password:
+    room:
