@@ -1,7 +1,6 @@
 import yaml
 from debug import debug
 from scraper import get_talks_page
-import calendar
 
 # Modes
 ANNOUNCE = 0
@@ -95,9 +94,11 @@ class Series:
         self.zoom = ZoomDetails(yaml["zoom"])
         self.room = yaml["room"]
         self.announce = get_daytime_from_offset(
-            yaml.get("announce"), default_announce_offset, default_announce_time)
+            yaml.get("announce"), default_announce_offset, default_announce_time
+        )
         self.reminder = get_daytime_from_offset(
-            yaml.get("reminder"), default_reminder_offset, default_reminder_time)
+            yaml.get("reminder"), default_reminder_offset, default_reminder_time
+        )
 
 
 class Config:
@@ -112,7 +113,6 @@ class Config:
 
 
 def check_config(config):
-
     if "admin" in config:
         admin = config["admin"]
         if "name" not in admin:
