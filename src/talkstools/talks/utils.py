@@ -3,6 +3,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.common.exceptions import NoAlertPresentException
 
 
 def fill_box_if_not_none(
@@ -28,8 +29,13 @@ def wait_and_get(
     driver: WebDriver, selector: str, value: str, timeout: int = 30
 ) -> Optional[WebElement]:
     try:
-        return WebDriverWait(driver, timeout).until(
+        element = WebDriverWait(driver, timeout).until(
             EC.presence_of_element_located((selector, value))
         )
+        try:
+            driver.switch_to.alert.accept()
+        except NoAlertPresentException:
+            pass
+        return element
     except Exception:
         return None
