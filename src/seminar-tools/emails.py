@@ -7,13 +7,15 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+def print_email(email):
+    print("\n==============================================\n")
+    print(email)
+    print("\n==============================================\n")
 
 def write_and_send_email(config, seminar, talk, template, is_reminder, stdout):
     email = write_email(config, seminar, talk, template)
     if stdout:
-        print("\n==============================================\n")
-        print(email)
-        print("\n==============================================\n")
+        print_email(email)
     else:
         send_email(config, seminar, talk, email, is_reminder)
 
