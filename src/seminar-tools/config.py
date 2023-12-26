@@ -103,7 +103,6 @@ class Series:
 
 class Config:
     def __init__(self, yaml, log_file):
-        self.smtp = SMTPDetails(yaml["smtp"])
         self.admin = AdminDetails(yaml["admin"])
         self.discord = yaml["discord"]
         self.log = log_file
@@ -124,20 +123,6 @@ def check_config(config):
 
     if "discord" not in config:
         return "discord"
-
-    if "smtp" in config:
-        smtp = config["smtp"]
-        if "port" not in smtp:
-            return "smtp.port"
-        if "host" not in smtp:
-            return "smtp.host"
-        if "user" not in smtp:
-            return "smtp.user"
-        if "password" not in smtp:
-            return "smtp.password"
-    else:
-        return "smtp"
-
     if "seminars" in config:
         for seminar in config["seminars"]:
             if "series" not in seminar:
