@@ -13,6 +13,7 @@ edit_talk_route = "talk/edit"
 
 
 def add_talk(driver: WebDriver, list_id: int, talk: Talk):
+    print(f"Adding {get_talk_string(talk)}")
     url = get_talks_url(edit_talk_route, [("list_id", str(list_id))])
     driver.get(url)
     fill_box_if_not_none(driver, By.ID, "talk_title", talk.title)
