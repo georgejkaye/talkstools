@@ -16,6 +16,7 @@ PyYAML = "^6.0.1"
 "discord.py" = "^2.3.2"
 more-itertools = "^10.1.0"
 selenium = "^4.16.0"
+argparse = "^1.4.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.11.0"
