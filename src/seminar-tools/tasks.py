@@ -47,7 +47,6 @@ def check_for_tasks(config):
             elif check_if_right_time(next_talk.reminder_datetime):
                 reminder_seminar(config, seminar, next_talk, False)
             else:
-                debug(
-                    config, f"{seminar.name}: Not the right time to send an email")
+                debug(config, f"{seminar.name}: Not the right time to send an email")
         else:
             debug(config, f"No talk in the next week for {seminar.name}")

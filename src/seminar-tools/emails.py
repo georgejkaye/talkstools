@@ -19,13 +19,12 @@ def write_and_send_email(config, seminar, talk, template, is_reminder, stdout):
 
 
 def write_email(config, seminar, talk, template):
-
     current_dir = Path(__file__).resolve().parent
     templates_dir = current_dir / "templates"
 
     env = Environment(
         loader=FileSystemLoader(templates_dir),
-        autoescape=select_autoescape(["html", "xml"])
+        autoescape=select_autoescape(["html", "xml"]),
     )
 
     template = env.get_template(template)
@@ -40,14 +39,14 @@ def prepare_email(config, seminar, talk, body) -> None:
     body_item = f"body='{body}'"
     plain_text_item = "format=2"
     compose_items = ",".join(
-        [to_item, from_item, subject_item, body_item, plain_text_item])
-    quoted_compose_items = f"\"{compose_items}\""
+        [to_item, from_item, subject_item, body_item, plain_text_item]
+    )
+    quoted_compose_items = f'"{compose_items}"'
     command = f"thunderbird -compose {quoted_compose_items}"
     subprocess.Popen(command, shell=True)
 
 
 def send_email(config, seminar, talk, email_content, is_reminder):
-
     email_sender = config.admin.email
     email_recipient = seminar.mailing_list
 
@@ -59,7 +58,9 @@ def send_email(config, seminar, talk, email_content, is_reminder):
 
         message = MIMEMultipart("alternative")
 
-        subject = f"{ talk.series } talk by { talk.speaker }, { talk.get_short_datetime() }"
+        subject = (
+            f"{ talk.series } talk by { talk.speaker }, { talk.get_short_datetime() }"
+        )
         if is_reminder:
             subject = f"Reminder: " + subject
 
@@ -75,16 +76,19 @@ def send_email(config, seminar, talk, email_content, is_reminder):
             try:
                 server.login(smtp_user, smtp_password)
             except Exception as e:
-                debug(config,
-                      f"Error logging into server {smtp_host}:{smtp_port} as user {smtp_user}: {e.smtp_code} {e.smtp_error.decode('UTF-8')}")
+                debug(
+                    config,
+                    f"Error logging into server {smtp_host}:{smtp_port} as user {smtp_user}: {e.smtp_code} {e.smtp_error.decode('UTF-8')}",
+                )
                 exit(1)
 
             try:
-                server.sendmail(email_sender, email_recipient,
-                                message.as_string())
+                server.sendmail(email_sender, email_recipient, message.as_string())
             except Exception as e:
-                debug(config,
-                      f"Error sending email from server {smtp_host}:{smtp_port} as user {smtp_user}: {e.smtp_code} {e.smtp_error.decode('UTF-8')}")
+                debug(
+                    config,
+                    f"Error sending email from server {smtp_host}:{smtp_port} as user {smtp_user}: {e.smtp_code} {e.smtp_error.decode('UTF-8')}",
+                )
                 exit(1)
 
         debug(config, f"Sent email to {email_recipient}")
