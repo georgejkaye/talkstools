@@ -121,10 +121,7 @@ def get_next_talk(config, seminar):
     talks = root.findall("talk")
 
     for talk in talks:
-        # Talks can be crossposted between lists so this means that talks
-        # not in the 'core' series can be overridden by closer 'bonus' talks
-        # So we need to check it's in the right series
-        if talk is not None and talk.find("series").text == series_name:
+        if talk is not None:
             talk_title = unescape(talk.find("title").text)
             talk_speaker_and_institution = talk.find("speaker").text
             # Usually the speaker field has an institution in brackets alongside
