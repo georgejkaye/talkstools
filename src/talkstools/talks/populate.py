@@ -78,7 +78,8 @@ def main():
         login(driver)
 
         if not (args.date is None or args.time is None):
-            talk = Talk(args.date, start_time, end_time)
+            talk_date = datetime.strptime(args.date, "%Y-%m-%d").date()
+            talk = Talk(talk_date, start_time, end_time)
             add_talk(driver, talk_list, talk)
         elif not (args.range is None or args.day is None):
             start_date = datetime.strptime(args.range[0], "%Y-%m-%d").date()
