@@ -5,7 +5,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
 from talkstools.auth import read_credentials
-from talkstools.talks.start import get_talks_url
+from talkstools.talks.start import driver_get, get_talks_url
 from talkstools.talks.utils import fill_box, wait_and_get
 
 login_route = "login/other_users"
@@ -34,7 +34,7 @@ def login_with(
         talks_credentials = get_talks_credentials()
     else:
         talks_credentials = credentials
-    driver.get(endpoint)
+    driver_get(driver, endpoint)
     fill_box(driver, By.ID, "email", talks_credentials.user)
     password_box = fill_box(driver, By.ID, "password", talks_credentials.password)
     password_box.submit()

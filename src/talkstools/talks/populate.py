@@ -4,9 +4,10 @@ from datetime import date, time, timedelta, datetime
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
+
 from talkstools.talks.login import TalksCredentials, login
 from talkstools.talks.structs import Talk, get_talk_string
-from talkstools.talks.start import get_talks_url, start
+from talkstools.talks.start import driver_get, get_talks_url, start
 from talkstools.talks.utils import fill_box, fill_box_if_not_none
 
 edit_talk_route = "talk/edit"
@@ -15,7 +16,7 @@ edit_talk_route = "talk/edit"
 def add_talk(driver: WebDriver, list_id: int, talk: Talk):
     print(f"Adding {get_talk_string(talk)}")
     url = get_talks_url(edit_talk_route, [("list_id", str(list_id))])
-    driver.get(url)
+    driver_get(driver, url)
     fill_box_if_not_none(driver, By.ID, "talk_title", talk.title)
     fill_box_if_not_none(driver, By.ID, "talk_abstract", talk.abstract)
     fill_box_if_not_none(
