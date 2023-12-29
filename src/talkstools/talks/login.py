@@ -49,7 +49,6 @@ def login_with(
         else:
             print("Login successful!")
             cookie = driver.get_cookie("_session_id")
-            print(cookie)
             if cookie is None:
                 raise RuntimeError("Could not get session cookie")
             return cookie["value"]
