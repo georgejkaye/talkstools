@@ -2,3 +2,4 @@ config.yml
 __pycache__/
 log.txt
 .vscode/
+credentials.json
