@@ -1,15 +1,12 @@
 from dataclasses import dataclass
-import json
-from pathlib import Path
 from typing import Optional
 import urllib.parse
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
-from talkstools.talks.auth import read_credentials
 
+from talkstools.auth import read_credentials
 from talkstools.talks.start import get_talks_url
 from talkstools.talks.utils import fill_box, wait_and_get
-from talkstools.utils import get_env_variable
 
 login_route = "login/other_users"
 invalid_route = "login/not_raven_login"
@@ -22,7 +19,7 @@ class TalksCredentials:
 
 
 def get_talks_credentials() -> TalksCredentials:
-    credentials_dict = read_credentials()
+    credentials_dict = read_credentials()["talks"]
     credentials = TalksCredentials(
         credentials_dict["user"], credentials_dict["password"]
     )
