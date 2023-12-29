@@ -6,7 +6,7 @@ from datetime import date, datetime, time
 from talkstools.talks.login import login
 
 from talkstools.talks.start import get_talks_url, start
-from talkstools.talks.structs import Series, Talk
+from talkstools.talks.structs import Series, Talk, User
 
 talk_index_route = "talk/index"
 series_xml_route = "show/xml"
@@ -55,7 +55,6 @@ def get_breadcrumbs(root: Element) -> Element:
     breadcrumbs = root.xpath(".//div[@id = 'bread']")[0]
     if breadcrumbs is None:
         raise RuntimeError("Could not find breadcrumb trail")
-    print(breadcrumbs)
     return breadcrumbs
 
 
@@ -87,35 +86,39 @@ def get_details(root: Element) -> Element:
     return details
 
 
-def get_person(id: int, cookie: str) -> tuple[str, str]:
+def get_item_from_user(root: Element, elem: int) -> str:
+    item = root.xpath("(//div[@class = 'user']//td)[$elem]", elem=elem)[0]
+    if item is None or item.text is None:
+        raise RuntimeError("Could not find speaker")
+    return item.text
+
+
+def get_person(id: int, cookie: str) -> User:
     speaker_url = get_talks_url(f"/user/show/{id}")
     speaker_page = requests_get(speaker_url, cookies={"_session_id": cookie})
     speaker_root = etree.HTML(speaker_page)
-    name_item = speaker_root.xpath("(//div[@class = 'user']//td)[2]")[0]
-    print(name_item)
-    if name_item is None or name_item.text is None:
-        raise RuntimeError("Could not find speaker name")
-    speaker_name = name_item.text
-    email_item = speaker_root.xpath("(//div[@class = 'user']//td)[6]")[0]
-    if email_item is None:
+    speaker_name = get_item_from_user(speaker_root, 2)
+    speaker_affiliation = get_item_from_user(speaker_root, 4)
+    speaker_email_item = speaker_root.xpath(
+        "((//div[@class = 'user']//td)[$elem])/a", elem=6
+    )[0]
+    if speaker_email_item is None or speaker_email_item.text is None:
         raise RuntimeError("Could not find speaker email")
-    email = email_item.find("a")
-    if email is None or email.text is None:
-        raise RuntimeError("Could not find speaker email")
-    speaker_email = email.text
-    return (speaker_name, speaker_email)
+    speaker_email = speaker_email_item.text
+    return User(speaker_name, speaker_affiliation, speaker_email)
 
 
-def get_speaker_from_details(details: Element, cookie: str) -> tuple[str, str]:
-    speaker_detail = details.xpath("(//li)[1]")[0]
-    if speaker_detail is None:
+def get_speaker_from_details(details: Element, cookie: str) -> Optional[User]:
+    speaker_item = details.xpath("(.//li)[1]")[0]
+    if speaker_item is None:
         raise RuntimeError("Could not find speaker")
-    speaker_item = speaker_detail.find("a")
-    if speaker_item is None or speaker_item.text is None:
-        raise RuntimeError("Could not find speaker")
+    speaker_link = speaker_item.find("a")
+    if speaker_link is None:
+        text = "".join(speaker_item.itertext())
+        if text == "Speaker to be confirmed":
+            return None
+        return User(text)
     speaker_route = speaker_item.get("href")
-    if speaker_route is None:
-        raise RuntimeError("Could not find speaker")
     speaker_id = int(speaker_route.split("/")[-1])
     return get_person(speaker_id, cookie)
 
@@ -136,13 +139,15 @@ def get_times_from_details(details: Element) -> tuple[date, time, time]:
     return (date_object, start_object, end_object)
 
 
-def get_venue_from_details(details: Element) -> str:
+def get_venue_from_details(details: Element) -> Optional[str]:
     venue_detail = details.xpath("(.//li)[3]")[0]
     if venue_detail is None:
         raise RuntimeError("Could not find venue")
     venue_item = venue_detail.find("a")
     if venue_item is None or venue_item.text is None:
         raise RuntimeError("Could not find venue")
+    if venue_item.text == "Venue to be confirmed":
+        return None
     return venue_item.text
 
 
@@ -153,7 +158,7 @@ def get_special(root: Element) -> Optional[str]:
     return special.text
 
 
-def get_organiser(root: Element, cookie) -> tuple[str, str]:
+def get_organiser(root: Element, cookie) -> User:
     organiser = root.xpath("((.//div[@class = 'vevent']/p)[2])/a")[0]
     if organiser is None or organiser.text is None:
         raise RuntimeError("Could not find organiser")
@@ -189,22 +194,20 @@ def get_talk(talk_id: int, cookie: str):
     talk_series = get_series_from_breadcrumbs(breadcrumbs)
     talk_title = get_title(root)
     talk_details = get_details(root)
-    (speaker_name, speaker_email) = get_speaker_from_details(talk_details, cookie)
+    talk_speaker = get_speaker_from_details(talk_details, cookie)
     (talk_date, talk_start, talk_end) = get_times_from_details(talk_details)
     talk_venue = get_venue_from_details(talk_details)
     talk_special = get_special(root)
     talk_abstract = get_abstract(root)
-    (organiser_name, organiser_email) = get_organiser(root, cookie)
+    talk_organiser = get_organiser(root, cookie)
     return Talk(
         talk_date,
         talk_start,
         talk_end,
         talk_title,
         talk_abstract,
-        speaker_email,
-        speaker_name,
-        organiser_name,
-        organiser_email,
+        talk_speaker,
+        talk_organiser,
         talk_special,
         talk_id,
         talk_venue,
