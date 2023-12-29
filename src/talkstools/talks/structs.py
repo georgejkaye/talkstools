@@ -10,16 +10,21 @@ class Series:
 
 
 @dataclass
+class User:
+    name: str
+    email: Optional[str] = None
+    affiliation: Optional[str] = None
+
+
+@dataclass
 class Talk:
     talk_date: date
     talk_start: time
     talk_end: time
     title: Optional[str] = None
     abstract: Optional[str] = None
-    speaker_email: Optional[str] = None
-    speaker_name_and_affiliation: Optional[str] = None
-    organiser_name: Optional[str] = None
-    organiser_email: Optional[str] = None
+    speaker: Optional[User] = None
+    organiser: Optional[User] = None
     special_message: Optional[str] = None
     id: Optional[int] = None
     venue: Optional[str] = None
@@ -33,9 +38,9 @@ def get_title_string(talk: Talk) -> str:
 
 
 def get_speaker_string(talk: Talk) -> str:
-    if talk.speaker_name_and_affiliation is None:
+    if talk.speaker is None:
         return "Speaker to be confirmed"
-    return talk.speaker_name_and_affiliation
+    return talk.speaker.name
 
 
 def get_datetime_string(talk: Talk) -> str:
