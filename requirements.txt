@@ -1,6 +1,0 @@
-bs4
-requests
-Jinja2
-pyyaml
-discord.py
-more_itertools
