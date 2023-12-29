@@ -28,7 +28,7 @@ def get_talks_credentials() -> TalksCredentials:
 
 def login_with(
     endpoint: str, driver: WebDriver, credentials: Optional[TalksCredentials] = None
-):
+) -> str:
     print("Logging in...")
     if credentials is None:
         talks_credentials = get_talks_credentials()
@@ -48,16 +48,21 @@ def login_with(
             exit(1)
         else:
             print("Login successful!")
+            cookie = driver.get_cookie("_session_id")
+            print(cookie)
+            if cookie is None:
+                raise RuntimeError("Could not get session cookie")
+            return cookie["value"]
 
 
-def login(driver: WebDriver, credentials: Optional[TalksCredentials] = None):
+def login(driver: WebDriver, credentials: Optional[TalksCredentials] = None) -> str:
     url = get_talks_url(login_route)
-    login_with(url, driver, credentials)
+    return login_with(url, driver, credentials)
 
 
 def login_and_return(
     driver: WebDriver, return_url: str, credentials: Optional[TalksCredentials] = None
-):
+) -> str:
     options = [("return_url", urllib.parse.quote(return_url, safe=""))]
     url = get_talks_url(login_route, options=options)
-    login_with(url, driver, credentials)
+    return login_with(url, driver, credentials)
