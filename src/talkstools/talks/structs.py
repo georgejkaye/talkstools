@@ -4,6 +4,12 @@ from typing import Optional
 
 
 @dataclass
+class Series:
+    name: str
+    id: Optional[int] = None
+
+
+@dataclass
 class Talk:
     talk_date: date
     talk_start: time
@@ -12,9 +18,12 @@ class Talk:
     abstract: Optional[str] = None
     speaker_email: Optional[str] = None
     speaker_name_and_affiliation: Optional[str] = None
+    organiser_name: Optional[str] = None
     organiser_email: Optional[str] = None
     special_message: Optional[str] = None
+    id: Optional[int] = None
     venue: Optional[str] = None
+    series: Optional[Series] = None
 
 
 def get_title_string(talk: Talk) -> str:
