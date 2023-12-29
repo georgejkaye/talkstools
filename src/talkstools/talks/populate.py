@@ -4,7 +4,7 @@ from datetime import date, time, timedelta, datetime
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
-from talkstools.talks.login import login
+from talkstools.talks.login import TalksCredentials, login
 from talkstools.talks.structs import Talk, get_talk_string
 from talkstools.talks.start import get_talks_url, start
 from talkstools.talks.utils import fill_box, fill_box_if_not_none
@@ -51,39 +51,31 @@ def add_talks_in_range(
 
 parser = argparse.ArgumentParser(prog="populate", description="Add talks")
 
-parser.add_argument("-d", "--date")
+parser.add_argument("-l", "--list")
+
 parser.add_argument("-t", "--time", nargs=2)
+
+parser.add_argument("-d", "--date")
+
 parser.add_argument("-r", "--range", nargs=2, metavar="DATE")
 parser.add_argument("-w", "--day")
-parser.add_argument("-u", "--user")
-parser.add_argument("-p", "--password")
-parser.add_argument("-l", "--list")
-parser.add_argument("--password-file")
 
 
 def main():
     args = parser.parse_args()
 
     if (
-        args.user is None
-        or (args.password is None and args.password_file is None)
-        or ((args.date is None) and (args.range is None or args.day is None))
+        ((args.date is None) and (args.range is None or args.day is None))
         or args.list is None
         or args.time is None
     ):
         parser.print_usage()
     else:
-        user = args.user
-        if args.password is not None:
-            password = args.password
-        else:
-            with open(args.password_file) as f:
-                password = f.readline().replace("\n", "")
         talk_list = args.list
         start_time = datetime.strptime(args.time[0], "%H:%M").time()
         end_time = datetime.strptime(args.time[1], "%H:%M").time()
         driver = start()
-        login(driver, user, password)
+        login(driver)
 
         if not (args.date is None or args.time is None):
             talk = Talk(args.date, start_time, end_time)
