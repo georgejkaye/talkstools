@@ -1,3 +1,0 @@
-**{{ talk.title }}**
-*{{ talk.speaker }}{{ talk.get_institution(true) }}*
-**{{ talk.get_long_datetime() }}**

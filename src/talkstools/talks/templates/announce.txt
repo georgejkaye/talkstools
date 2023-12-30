@@ -1,6 +1,6 @@
 Hi all
 
-This week's {{ talk.series }} talk will be presented by {{ talk.speaker }}.
+This week's {{ series }} talk will be presented by {{ speaker_name }}.
 
 {% include "full-details.txt" %}
 

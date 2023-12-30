@@ -1,0 +1,3 @@
+**{{ title }}**
+*{{ speaker_text }}*
+**{{ talk_date }}, {{ talk_start }}-{{ talk_end }}**

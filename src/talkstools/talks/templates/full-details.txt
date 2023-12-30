@@ -2,8 +2,6 @@
 
 {% include "title-and-speaker.txt" %}
 
-{% include "location.txt" %}
-
-{{ talk.wrapped_abstract }}
+{{ abstract }}
 
 ***************************************
