@@ -10,6 +10,7 @@ from talkstools.talks.login import (
 from talkstools.core.structs import (
     Talk,
     get_speaker_input_string,
+    get_talk_string,
 )
 from talkstools.talks.start import get_talks_url
 
@@ -100,15 +101,46 @@ def get_update_parts(talk: Talk) -> dict[str, str]:
 
 
 def update_talk(talk_id: int, talk: Talk, session_id: str):
+    print(f"Updating talk {get_talk_string(talk)}")
     parts = get_update_parts(talk)
     url = get_talks_url(f"talk/update/{talk_id}")
-    requests.post(url, files=parts, cookies=get_talks_session_cookies(session_id))
+    response = requests.post(
+        url, files=parts, cookies=get_talks_session_cookies(session_id)
+    )
+    if response.status_code == 401:
+        raise SystemExit(f"Not authorised to update talk {talk_id}")
+    if response.status_code != 200:
+        raise SystemExit(f"Error {response.status_code}: could not update talk.")
 
 
 def add_talk(talk: Talk, session_id: str):
+    print(f"Adding talk {get_talk_string(talk)} to list {talk.series_id}")
     parts = get_update_parts(talk)
     url = get_talks_url("talk/update")
-    requests.post(url, files=parts, cookies=get_talks_session_cookies(session_id))
+    response = requests.post(
+        url, files=parts, cookies=get_talks_session_cookies(session_id)
+    )
+    if response.status_code == 401:
+        raise SystemExit(
+            f"Not authorised to add talk {talk.id} to list {talk.series_id}"
+        )
+    if response.status_code != 200:
+        raise SystemExit(f"Error {response.status_code}: could not remove talk.")
+
+
+def remove_talk(talk_id: int, session_id: str):
+    print(f"Removing talk {talk_id}")
+    url = get_talks_url(f"talk/delete/{talk_id}")
+    data = {"commit": "Delete+Talk"}
+    response = requests.post(
+        url,
+        data=data,
+        cookies=get_talks_session_cookies(session_id),
+    )
+    if response.status_code == 401:
+        raise SystemExit(f"Not authorised to remove talk {talk_id}")
+    if response.status_code != 200:
+        raise SystemExit(f"Error {response.status_code}: could not remove talk.")
 
 
 def add_talks_in_range(
