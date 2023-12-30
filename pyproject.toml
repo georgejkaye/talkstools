@@ -9,23 +9,21 @@ packages = [{include = "talkstools", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-bs4 = "^0.0.1"
 requests = "^2.31.0"
 Jinja2 = "^3.1.2"
 PyYAML = "^6.0.1"
 "discord.py" = "^2.3.2"
 more-itertools = "^10.1.0"
-selenium = "^4.16.0"
 argparse = "^1.4.0"
 lxml = "^4.9.4"
-types-lxml = "^2023.10.21"
-types-jinja2 = "^2.11.9"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.11.0"
 mypy = "^1.7.1"
 types-requests = "^2.31.0.10"
 types-pyyaml = "^6.0.12.12"
+types-lxml = "^2023.10.21"
+types-jinja2 = "^2.11.9"
 
 [build-system]
 requires = ["poetry-core"]
