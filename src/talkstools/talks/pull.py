@@ -105,7 +105,7 @@ def get_person(id: int, cookie: str) -> User:
     if speaker_email_item is None or speaker_email_item.text is None:
         raise RuntimeError("Could not find speaker email")
     speaker_email = speaker_email_item.text
-    return User(speaker_name, speaker_affiliation, speaker_email)
+    return User(speaker_name, speaker_email, speaker_affiliation)
 
 
 def get_speaker_from_details(details: Element, cookie: str) -> Optional[User]:
@@ -118,7 +118,7 @@ def get_speaker_from_details(details: Element, cookie: str) -> Optional[User]:
         if text == "Speaker to be confirmed":
             return None
         return User(text)
-    speaker_route = speaker_item.get("href")
+    speaker_route = speaker_link.get("href")
     speaker_id = int(speaker_route.split("/")[-1])
     return get_person(speaker_id, cookie)
 
