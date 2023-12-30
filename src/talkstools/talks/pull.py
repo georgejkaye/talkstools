@@ -170,7 +170,7 @@ def get_organiser(root: Element, cookie) -> User:
 
 
 def get_abstract(root: Element) -> str:
-    ps = root.findall("p")
+    ps = root.xpath("//div[@class='vevent']/p")
     abstract_paragraphs = []
     in_abstract = False
     for p in ps:
@@ -183,6 +183,8 @@ def get_abstract(root: Element) -> str:
                     break
                 else:
                     abstract_paragraphs.append(p.text)
+    if len(abstract_paragraphs) == 0:
+        return "Abstract not available"
     return "\n".join(abstract_paragraphs)
 
 
