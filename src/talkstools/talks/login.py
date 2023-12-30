@@ -28,7 +28,7 @@ def get_talks_credentials() -> TalksCredentials:
     return credentials
 
 
-def login_with(
+def login_with_selenium_route(
     endpoint: str, driver: WebDriver, credentials: Optional[TalksCredentials] = None
 ) -> str:
     print("Logging in...")
@@ -56,17 +56,19 @@ def login_with(
             return cookie["value"]
 
 
-def login(driver: WebDriver, credentials: Optional[TalksCredentials] = None) -> str:
+def login_with_selenium(
+    driver: WebDriver, credentials: Optional[TalksCredentials] = None
+) -> str:
     url = get_talks_url(login_route)
-    return login_with(url, driver, credentials)
+    return login_with_selenium_route(url, driver, credentials)
 
 
-def login_and_return(
+def login_with_selenium_and_return(
     driver: WebDriver, return_url: str, credentials: Optional[TalksCredentials] = None
 ) -> str:
     options = [("return_url", urllib.parse.quote(return_url, safe=""))]
     url = get_talks_url(login_route, options=options)
-    return login_with(url, driver, credentials)
+    return login_with_selenium_route(url, driver, credentials)
 
 
 login_route = "/login/not_raven_login"

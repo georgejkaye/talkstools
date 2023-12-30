@@ -5,7 +5,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
 
-from talkstools.talks.login import login
+from talkstools.talks.login import login_with_selenium
 from talkstools.core.structs import (
     Talk,
     get_speaker_input_string,
@@ -86,7 +86,7 @@ def main():
         start_time = datetime.strptime(args.time[0], "%H:%M").time()
         end_time = datetime.strptime(args.time[1], "%H:%M").time()
         driver = start()
-        login(driver)
+        login_with_selenium(driver)
 
         if not (args.date is None or args.time is None):
             talk_date = datetime.strptime(args.date, "%Y-%m-%d").date()
