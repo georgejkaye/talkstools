@@ -1,10 +1,12 @@
 from dataclasses import dataclass
 from typing import Optional
 import urllib.parse
+import requests
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
 from talkstools.auth import read_credentials
+
 from talkstools.talks.start import driver_get, get_talks_url
 from talkstools.talks.utils import fill_box, wait_and_get
 
@@ -65,3 +67,27 @@ def login_and_return(
     options = [("return_url", urllib.parse.quote(return_url, safe=""))]
     url = get_talks_url(login_route, options=options)
     return login_with(url, driver, credentials)
+
+
+login_route = "/login/not_raven_login"
+
+
+def login_with_requests(credentials: Optional[TalksCredentials] = None) -> str:
+    if credentials is None:
+        talks_credentials = get_talks_credentials()
+    else:
+        talks_credentials = credentials
+    url = get_talks_url(login_route)
+    data = {
+        "email": talks_credentials.user,
+        "password": talks_credentials.password,
+        "commit": "Log+in",
+    }
+    response = requests.post(url, data=data)
+    if response.status_code != 200:
+        raise RuntimeError("Could not log in")
+    cookies = response.cookies.get_dict()
+    session_id = cookies.get("_session_id")
+    if session_id is None:
+        raise RuntimeError("Could not get session id")
+    return session_id

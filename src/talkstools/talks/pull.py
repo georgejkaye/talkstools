@@ -1,12 +1,13 @@
+import requests
+
 from typing import Optional
 from lxml import etree
 from lxml.etree import _Element as Element
-import requests
 from datetime import date, datetime, time
-from talkstools.talks.login import login
 
-from talkstools.talks.start import get_talks_url, start
-from talkstools.talks.structs import Series, Talk, User
+from talkstools.core.structs import Series, Talk, User
+
+from talkstools.talks.start import get_talks_url
 
 talk_index_route = "talk/index"
 series_xml_route = "show/xml"
@@ -188,20 +189,20 @@ def get_abstract(root: Element) -> str:
     return "\n".join(abstract_paragraphs)
 
 
-def get_talk(talk_id: int, cookie: str):
+def get_talk(talk_id: int, session_id: str):
     url = get_talk_index_url(talk_id)
-    page = requests_get(url, cookies={"_session_id": cookie})
+    page = requests_get(url, cookies={"_session_id": session_id})
     root = etree.HTML(page)
     breadcrumbs = get_breadcrumbs(root)
     talk_series = get_series_from_breadcrumbs(breadcrumbs)
     talk_title = get_title(root)
     talk_details = get_details(root)
-    talk_speaker = get_speaker_from_details(talk_details, cookie)
+    talk_speaker = get_speaker_from_details(talk_details, session_id)
     (talk_date, talk_start, talk_end) = get_times_from_details(talk_details)
     talk_venue = get_venue_from_details(talk_details)
     talk_special = get_special(root)
     talk_abstract = get_abstract(root)
-    talk_organiser = get_organiser(root, cookie)
+    talk_organiser = get_organiser(root, session_id)
     return Talk(
         talk_date,
         talk_start,

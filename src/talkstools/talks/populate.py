@@ -6,7 +6,11 @@ from selenium.webdriver.common.by import By
 
 
 from talkstools.talks.login import login
-from talkstools.talks.structs import Talk, get_speaker_input_string, get_talk_string
+from talkstools.core.structs import (
+    Talk,
+    get_speaker_input_string,
+    get_talk_string,
+)
 from talkstools.talks.start import driver_get, get_talks_url, start
 from talkstools.talks.utils import fill_box, fill_box_if_not_none, wait_and_get
 

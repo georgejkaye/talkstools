@@ -1,17 +1,9 @@
-#!/usr/bin/python3
-
-from config import load_config
-from tasks import check_for_tasks
-import sys
-
-
-def main(config_file, log_file):
-    config = load_config(config_file, log_file)
-    check_for_tasks(config)
-
+from talkstools.talks.login import login_with_requests
+from talkstools.talks.pull import get_talk
+from talkstools.tasks.announce import print_email, write_announcement_email
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python main.py <config file> <log file>")
-        exit(1)
-    main(sys.argv[1], sys.argv[2])
+    session_id = login_with_requests()
+    talk = get_talk(5614, session_id)
+    email = write_announcement_email("George", talk)
+    print_email(email)

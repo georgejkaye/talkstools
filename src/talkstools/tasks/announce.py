@@ -1,14 +1,11 @@
 from jinja2 import Environment, PackageLoader, select_autoescape
 
-from talkstools.talks.start import start
-from talkstools.talks.login import login
-from talkstools.talks.pull import get_talk
-from talkstools.talks.structs import Talk
+from talkstools.core.structs import Talk
 
 
 def write_email(name: str, vars: dict) -> str:
     env = Environment(
-        loader=PackageLoader("talkstools.talks"),
+        loader=PackageLoader("talkstools.tasks"),
         autoescape=select_autoescape(["html", "xml"]),
     )
     template = env.get_template(name)
@@ -47,8 +44,13 @@ def write_announcement_email(admin: str, talk: Talk) -> str:
     return email
 
 
-if __name__ == "__main__":
-    driver = start()
-    cookie = login(driver)
-    talk = get_talk(5615, cookie)
-    print(write_announcement_email("George", talk))
+def print_email(email: str):
+    print(
+        "================================================================================"
+    )
+    print()
+    print(email)
+    print()
+    print(
+        "================================================================================"
+    )
