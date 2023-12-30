@@ -5,8 +5,8 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
 
-from talkstools.talks.login import TalksCredentials, login
-from talkstools.talks.structs import Talk, get_talk_string
+from talkstools.talks.login import login
+from talkstools.talks.structs import Talk, get_speaker_input_string, get_talk_string
 from talkstools.talks.start import driver_get, get_talks_url, start
 from talkstools.talks.utils import fill_box, fill_box_if_not_none, wait_and_get
 
@@ -23,9 +23,12 @@ def add_talk(driver: WebDriver, list_id: int, talk: Talk):
     fill_box_if_not_none(driver, By.ID, "talk_title", talk.title)
     fill_box_if_not_none(driver, By.ID, "talk_abstract", talk.abstract)
     fill_box_if_not_none(
-        driver, By.ID, "talk_name_of_speaker", talk.speaker_name_and_affiliation
+        driver, By.ID, "talk_name_of_speaker", get_speaker_input_string(talk)
     )
-    fill_box_if_not_none(driver, By.ID, "talk_organiser_email", talk.organiser_email)
+    if talk.organiser:
+        fill_box_if_not_none(
+            driver, By.ID, "talk_organiser_email", talk.organiser.email
+        )
     fill_box_if_not_none(driver, By.ID, "talk_special_message", talk.special_message)
     fill_box_if_not_none(driver, By.ID, "talk_venue_name", talk.venue)
     fill_box(driver, By.ID, "talk_date_string", talk.talk_date.strftime("%Y/%m/%d"))

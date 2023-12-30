@@ -37,6 +37,14 @@ def get_title_string(talk: Talk) -> str:
     return talk.title
 
 
+def get_speaker_input_string(talk: Talk) -> str:
+    if talk.speaker is None:
+        return ""
+    if talk.speaker.affiliation is None:
+        return talk.speaker.name
+    return f"{talk.speaker.name} ({talk.speaker.affiliation})"
+
+
 def get_speaker_string(talk: Talk) -> str:
     if talk.speaker is None:
         return "Speaker to be confirmed"
