@@ -1,4 +1,3 @@
-from pathlib import Path
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from talkstools.talks.start import start
@@ -27,10 +26,14 @@ def write_announcement_email(admin: str, talk: Talk) -> str:
             speaker_text = speaker_name
         else:
             speaker_text = f"{speaker_name} ({talk.speaker.affiliation})"
+    if talk.series is None:
+        series = "seminar"
+    else:
+        series = talk.series.name
     email = write_email(
         "announce.txt",
         {
-            "series": talk.series.name,
+            "series": series,
             "speaker_name": speaker_name,
             "abstract": talk.abstract,
             "title": talk.title,
