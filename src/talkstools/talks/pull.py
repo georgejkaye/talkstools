@@ -70,7 +70,7 @@ def get_series_from_breadcrumbs(breadcrumbs: Element) -> Series:
     if series_url is None:
         raise RuntimeError("Could not find series url")
     series_id = int(series_url.split("/")[-1])
-    return Series(series_name, series_id)
+    return Series(series_id, series_name)
 
 
 def get_title(root: Element) -> str:
@@ -204,9 +204,11 @@ def get_talk(talk_id: int, session_id: str):
     talk_abstract = get_abstract(root)
     talk_organiser = get_organiser(root, session_id)
     return Talk(
+        talk_series.id,
         talk_date,
         talk_start,
         talk_end,
+        talk_series.name,
         talk_title,
         talk_abstract,
         talk_speaker,

@@ -5,8 +5,8 @@ from typing import Optional
 
 @dataclass
 class Series:
+    id: int
     name: str
-    id: Optional[int] = None
 
 
 @dataclass
