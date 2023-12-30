@@ -18,9 +18,11 @@ class User:
 
 @dataclass
 class Talk:
+    series_id: int
     talk_date: date
     talk_start: time
     talk_end: time
+    series_name: Optional[str] = None
     title: Optional[str] = None
     abstract: Optional[str] = None
     speaker: Optional[User] = None
