@@ -174,11 +174,11 @@ def get_abstract(root: Element) -> str:
     abstract_paragraphs = []
     in_abstract = False
     for p in ps:
-        if p.get("class") == "urgent":
+        if not in_abstract and p.get("class") == "urgent":
             in_abstract = True
         elif in_abstract:
             if p.text is not None:
-                if p.text.find("This talk is part of the") and p.text.find("series"):
+                if "This talk is part of the" in p.text:
                     in_abstract = False
                     break
                 else:
