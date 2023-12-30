@@ -7,7 +7,7 @@ from datetime import date, datetime, time
 
 from talkstools.core.structs import Series, Talk, User
 
-from talkstools.talks.start import get_talks_url
+from talkstools.talks.url import get_talks_url
 
 talk_index_route = "talk/index"
 series_xml_route = "show/xml"

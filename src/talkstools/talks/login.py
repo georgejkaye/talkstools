@@ -4,7 +4,7 @@ import requests
 
 from talkstools.auth import read_credentials
 
-from talkstools.talks.start import get_talks_url
+from talkstools.talks.url import get_talks_url
 
 login_route = "login/other_users"
 invalid_route = "login/not_raven_login"
