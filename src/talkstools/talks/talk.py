@@ -12,17 +12,9 @@ from talkstools.core.structs import (
     get_speaker_input_string,
     get_talk_string,
 )
-from talkstools.talks.start import get_talks_url
+from talkstools.talks.url import get_talks_url
 
 edit_talk_route = "talk/edit"
-
-
-def get_multipart_part(name: str, value: str) -> str:
-    return f'Content-Disposition: form-data; name="{name}"\n\n{value}'
-
-
-def get_talk_multipart_part(key: str, value: str) -> str:
-    return get_multipart_part(f"talk[{key}]", value)
 
 
 def get_talks_title_value(talk: Talk) -> str:
