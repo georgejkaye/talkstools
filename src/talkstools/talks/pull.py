@@ -26,7 +26,7 @@ def get_series_xml_url(series_id: int, days: Optional[int] = None) -> str:
 def requests_get(url: str, cookies: dict = {}) -> bytes:
     page = requests.get(url, cookies=cookies)
     if page.status_code != 200:
-        raise RuntimeError(f"Could not get page {url}")
+        raise SystemExit(f"Could not get page {url}")
     return page.content
 
 
@@ -44,7 +44,7 @@ def get_talk_with_series(talk_id: int, series_id: int) -> Element:
         id = talk.find("id")
         if id is not None and id.text is not None and int(id.text) == talk_id:
             return talk
-    raise RuntimeError(f"Talk {talk_id} not found in series {series_id}")
+    raise SystemExit(f"Talk {talk_id} not found in series {series_id}")
 
 
 def get_talk_index_url(talk_id: int) -> str:
@@ -55,20 +55,20 @@ def get_talk_index_url(talk_id: int) -> str:
 def get_breadcrumbs(root: Element) -> Element:
     breadcrumbs = root.xpath(".//div[@id = 'bread']")[0]
     if breadcrumbs is None:
-        raise RuntimeError("Could not find breadcrumb trail")
+        raise SystemExit("Could not find breadcrumb trail")
     return breadcrumbs
 
 
 def get_series_from_breadcrumbs(breadcrumbs: Element) -> Series:
     series = breadcrumbs.xpath("(.//a)[3]")[0]
     if series is None or series.text is None:
-        raise RuntimeError("Could not find series item in breadcrumb trail")
+        raise SystemExit("Could not find series item in breadcrumb trail")
     series_name = series.text
     if series_name is None:
-        raise RuntimeError("Could not find series name")
+        raise SystemExit("Could not find series name")
     series_url = series.get("href")
     if series_url is None:
-        raise RuntimeError("Could not find series url")
+        raise SystemExit("Could not find series url")
     series_id = int(series_url.split("/")[-1])
     return Series(series_id, series_name)
 
@@ -76,21 +76,21 @@ def get_series_from_breadcrumbs(breadcrumbs: Element) -> Series:
 def get_title(root: Element) -> str:
     header = root.xpath(".//h1[@class= 'summary']")[0]
     if header is None or header.text is None:
-        raise RuntimeError("Could not find title")
+        raise SystemExit("Could not find title")
     return header.text
 
 
 def get_details(root: Element) -> Element:
     details = root.xpath(".//ul[@class = 'details']")[0]
     if details is None:
-        raise RuntimeError("Could not find details")
+        raise SystemExit("Could not find details")
     return details
 
 
 def get_item_from_user(root: Element, elem: int) -> str:
     item = root.xpath("(//div[@class = 'user']//td)[$elem]", elem=elem)[0]
     if item is None or item.text is None:
-        raise RuntimeError("Could not find speaker")
+        raise SystemExit("Could not find speaker")
     return item.text
 
 
@@ -104,7 +104,7 @@ def get_person(id: int, cookie: str) -> User:
         "((//div[@class = 'user']//td)[$elem])/a", elem=6
     )[0]
     if speaker_email_item is None or speaker_email_item.text is None:
-        raise RuntimeError("Could not find speaker email")
+        raise SystemExit("Could not find speaker email")
     speaker_email = speaker_email_item.text
     return User(speaker_name, speaker_email, speaker_affiliation)
 
@@ -112,7 +112,7 @@ def get_person(id: int, cookie: str) -> User:
 def get_speaker_from_details(details: Element, cookie: str) -> Optional[User]:
     speaker_item = details.xpath("(.//li)[1]")[0]
     if speaker_item is None:
-        raise RuntimeError("Could not find speaker")
+        raise SystemExit("Could not find speaker")
     speaker_link = speaker_item.find("a")
     if speaker_link is None:
         text = "".join(speaker_item.itertext())
@@ -127,7 +127,7 @@ def get_speaker_from_details(details: Element, cookie: str) -> Optional[User]:
 def get_times_from_details(details: Element) -> tuple[date, time, time]:
     time_detail = details.xpath("(.//li)[2]")[0]
     if time_detail is None:
-        raise RuntimeError("Could not get time")
+        raise SystemExit("Could not get time")
     time_text = "".join(time_detail.itertext())
     date_and_times = time_text.split(",")
     date_text = date_and_times[0]
@@ -143,10 +143,10 @@ def get_times_from_details(details: Element) -> tuple[date, time, time]:
 def get_venue_from_details(details: Element) -> Optional[str]:
     venue_detail = details.xpath("(.//li)[3]")[0]
     if venue_detail is None:
-        raise RuntimeError("Could not find venue")
+        raise SystemExit("Could not find venue")
     venue_item = venue_detail.find("a")
     if venue_item is None or venue_item.text is None:
-        raise RuntimeError("Could not find venue")
+        raise SystemExit("Could not find venue")
     if venue_item.text == "Venue to be confirmed":
         return None
     return venue_item.text
@@ -162,10 +162,10 @@ def get_special(root: Element) -> Optional[str]:
 def get_organiser(root: Element, cookie) -> User:
     organiser = root.xpath("((.//div[@class = 'vevent']/p)[2])/a")[0]
     if organiser is None or organiser.text is None:
-        raise RuntimeError("Could not find organiser")
+        raise SystemExit("Could not find organiser")
     organiser_route = organiser.get("href")
     if organiser_route is None:
-        raise RuntimeError("could not find organiser")
+        raise SystemExit("could not find organiser")
     organiser_id = int(organiser_route.split("/")[-1])
     return get_person(organiser_id, cookie)
 

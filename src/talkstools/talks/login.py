@@ -40,11 +40,11 @@ def login(credentials: Optional[TalksCredentials] = None) -> str:
     }
     response = requests.post(url, data=data)
     if response.status_code != 200:
-        raise RuntimeError("Could not log in")
+        raise SystemExit("Could not log in")
     cookies = response.cookies.get_dict()
     session_id = cookies.get("_session_id")
     if session_id is None:
-        raise RuntimeError("Could not get session id")
+        raise SystemExit("Could not get session id")
     return session_id
 
 

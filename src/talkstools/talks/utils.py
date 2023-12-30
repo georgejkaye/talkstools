@@ -17,7 +17,7 @@ def fill_box_if_not_none(
 def fill_box(driver: WebDriver, selector: str, value: str, content: str) -> WebElement:
     box = wait_and_get(driver, selector, value)
     if box is None:
-        raise RuntimeError("Box not found")
+        raise SystemExit("Box not found")
     else:
         box.clear()
         box.send_keys(content)
