@@ -3,7 +3,11 @@ import requests
 
 from datetime import datetime, date, time, timedelta
 
-from talkstools.core.structs import Talk, get_speaker_input_string, get_talk_string
+from talkstools.core.structs import (
+    Talk,
+    get_speaker_and_affiliation_string,
+    get_talk_string,
+)
 from talkstools.talks.login import get_talks_session_cookies, login
 from talkstools.talks.url import get_talks_url
 
@@ -26,14 +30,11 @@ def get_talks_abstract_value(talk: Talk) -> str:
 
 def get_talks_speaker_values(talk: Talk) -> tuple[str, str]:
     if talk.speaker is not None:
+        (_, speaker_name) = get_speaker_and_affiliation_string(talk)
         if talk.speaker.email is not None:
             speaker_email = talk.speaker.email
         else:
             speaker_email = ""
-        if talk.speaker.name is not None:
-            speaker_name = get_speaker_input_string(talk)
-        else:
-            speaker_name = "Speaker to be confirmed"
     else:
         speaker_name = "Speaker to be confirmed"
         speaker_email = ""
