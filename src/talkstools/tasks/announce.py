@@ -1,33 +1,31 @@
 from jinja2 import Environment, PackageLoader, select_autoescape
 
-from talkstools.core.structs import Talk
+from talkstools.core.structs import (
+    Talk,
+    get_speaker_and_affiliation_string,
+    get_venue_string,
+)
+from talkstools.talks.talk_read import get_talk_index_route
+from talkstools.talks.url import get_talks_url
 
 
-def write_email(name: str, vars: dict) -> str:
+def write_template(name: str, vars: dict) -> str:
     env = Environment(
         loader=PackageLoader("talkstools.tasks"),
         autoescape=select_autoescape(["html", "xml"]),
     )
     template = env.get_template(name)
-    email = template.render(vars)
-    return email
+    text = template.render(vars)
+    return text
 
 
 def write_announcement_email(admin: str, talk: Talk) -> str:
-    if talk.speaker is None:
-        speaker_name = "Speaker to be confirmed"
-        speaker_text = speaker_name
-    else:
-        speaker_name = talk.speaker.name
-        if talk.speaker.affiliation is None:
-            speaker_text = speaker_name
-        else:
-            speaker_text = f"{speaker_name} ({talk.speaker.affiliation})"
+    (speaker_name, speaker_text) = get_speaker_and_affiliation_string(talk)
     if talk.series is None:
         series = "seminar"
     else:
         series = talk.series.name
-    email = write_email(
+    email = write_template(
         "announce.txt",
         {
             "series": series,
