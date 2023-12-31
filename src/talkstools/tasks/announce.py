@@ -36,10 +36,37 @@ def write_announcement_email(admin: str, talk: Talk) -> str:
             "talk_date": talk.talk_date.strftime("%A %d %B %Y"),
             "talk_start": talk.talk_start.strftime("%H:%M"),
             "talk_end": talk.talk_end.strftime("%H:%M"),
+            "venue": get_venue_string(talk),
             "admin": admin,
         },
     )
     return email
+
+
+def write_announcent_discord_message(talk: Talk) -> str:
+    if talk.series is None:
+        series = "seminar"
+    else:
+        series = talk.series.name
+    if talk.id is None:
+        raise RuntimeError("No talk id")
+    (speaker_name, speaker_text) = get_speaker_and_affiliation_string(talk)
+    message = write_template(
+        "discord-announce.txt",
+        {
+            "series": series,
+            "speaker_name": speaker_name,
+            "title": talk.title,
+            "talk_date": talk.talk_date.strftime("%A %d %B %Y"),
+            "talk_start": talk.talk_start.strftime("%H:%M"),
+            "talk_end": talk.talk_end.strftime("%H:%M"),
+            "venue": talk.venue,
+            "speaker_text": speaker_text,
+            "url": get_talks_url(get_talk_index_route(talk.id)),
+            "venue": get_venue_string(talk),
+        },
+    )
+    return message
 
 
 def print_email(email: str):

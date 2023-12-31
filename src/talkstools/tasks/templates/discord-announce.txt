@@ -1,5 +1,3 @@
-@everyone **{{ talk.speaker }}** will be giving the next **{{ talk.series }}** talk on **{{ talk.get_mid_datetime() }}**.
+This week's {{ series }} talk will be given by **{{ speaker_name }}**, who will be talking about **{{ title }}**. It will take place on **{{ talk_date }}, {{ talk_start }}-{{ talk_end }}** in **{{ venue }}**.
 
-{% include "title-and-speaker.txt" %}
-
-For more details, see {{ talk.link }}
+For more details, see {{ url }}.
