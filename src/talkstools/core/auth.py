@@ -1,7 +1,5 @@
-from dataclasses import dataclass
 import json
 import os
-from pathlib import Path
 
 from talkstools.utils import get_env_variable
 

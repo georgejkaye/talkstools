@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 import requests
 
-from talkstools.auth import read_credentials
+from talkstools.core.auth import read_credentials
 
 from talkstools.talks.url import get_talks_url
 
