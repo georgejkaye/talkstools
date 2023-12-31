@@ -32,6 +32,7 @@ def login(credentials: Optional[TalksCredentials] = None) -> str:
         talks_credentials = get_talks_credentials()
     else:
         talks_credentials = credentials
+    print(f"Logging in as {talks_credentials.user}")
     url = get_talks_url(login_route)
     data = {
         "email": talks_credentials.user,
@@ -45,6 +46,7 @@ def login(credentials: Optional[TalksCredentials] = None) -> str:
     session_id = cookies.get("_session_id")
     if session_id is None:
         raise SystemExit("Could not get session id")
+    print("Logged in successfully")
     return session_id
 
 
