@@ -1,20 +1,11 @@
 import argparse
 import requests
-from datetime import date, time, timedelta, datetime
 
+from datetime import datetime, date, time, timedelta
 
-from talkstools.talks.login import (
-    get_talks_session_cookies,
-    login,
-)
-from talkstools.core.structs import (
-    Talk,
-    get_speaker_input_string,
-    get_talk_string,
-)
+from talkstools.core.structs import Talk, get_speaker_input_string, get_talk_string
+from talkstools.talks.login import get_talks_session_cookies, login
 from talkstools.talks.url import get_talks_url
-
-edit_talk_route = "talk/edit"
 
 
 def get_talks_title_value(talk: Talk) -> str:
@@ -92,10 +83,14 @@ def get_update_parts(talk: Talk) -> dict[str, str]:
     return parts
 
 
+def get_update_talk_route(talk_id: int) -> str:
+    return f"talk/update/{talk_id}"
+
+
 def update_talk(talk_id: int, talk: Talk, session_id: str):
     print(f"Updating talk {get_talk_string(talk)}")
     parts = get_update_parts(talk)
-    url = get_talks_url(f"talk/update/{talk_id}")
+    url = get_talks_url(get_update_talk_route(talk_id))
     response = requests.post(
         url, files=parts, cookies=get_talks_session_cookies(session_id)
     )
@@ -105,10 +100,14 @@ def update_talk(talk_id: int, talk: Talk, session_id: str):
         raise SystemExit(f"Error {response.status_code}: could not update talk.")
 
 
+def get_add_talk_route() -> str:
+    return "talk/update"
+
+
 def add_talk(talk: Talk, session_id: str):
     print(f"Adding talk {get_talk_string(talk)} to list {talk.series_id}")
     parts = get_update_parts(talk)
-    url = get_talks_url("talk/update")
+    url = get_talks_url(get_add_talk_route())
     response = requests.post(
         url, files=parts, cookies=get_talks_session_cookies(session_id)
     )
@@ -120,9 +119,13 @@ def add_talk(talk: Talk, session_id: str):
         raise SystemExit(f"Error {response.status_code}: could not remove talk.")
 
 
+def get_remove_talk_route(talk_id: int) -> str:
+    return f"talk/delete/{talk_id}"
+
+
 def remove_talk(talk_id: int, session_id: str):
     print(f"Removing talk {talk_id}")
-    url = get_talks_url(f"talk/delete/{talk_id}")
+    url = get_talks_url(get_remove_talk_route(talk_id))
     data = {"commit": "Delete+Talk"}
     response = requests.post(
         url,
