@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import date, time
+from datetime import date, datetime, time
 from typing import Optional
 
 
@@ -14,6 +14,45 @@ class User:
     name: str
     email: Optional[str] = None
     affiliation: Optional[str] = None
+
+
+@dataclass
+class ShortTalk:
+    series_id: int
+    talk_id: int
+    title: str
+    abstract: str
+    speaker: str
+    venue: str
+    special_message: str
+    url: str
+    start_time: datetime
+    end_time: datetime
+
+
+def get_short_talk_datetime_string(talk: ShortTalk) -> str:
+    return f"{talk.start_time.strftime('%d %b %Y')} {talk.start_time.strftime('%H:%M')}-{talk.end_time.strftime('%H:%M')}"
+
+
+def get_short_talk_string(talk: ShortTalk) -> str:
+    return f"{talk.talk_id}: '{talk.title}' - {talk.speaker} ({get_short_talk_datetime_string(talk)})"
+
+
+def get_short_talk_table(talks: list[ShortTalk]) -> str:
+    max_id_length = max([len(str(talk.talk_id)) for talk in talks])
+    max_title_length = max([len(talk.title) for talk in talks])
+    max_speaker_length = max([len(talk.speaker) for talk in talks])
+    strings = []
+    for talk in talks:
+        id_string = str(talk.talk_id).ljust(max_id_length)
+        title_string = talk.title.ljust(max_title_length)
+        speaker_string = talk.speaker.ljust(max_speaker_length)
+        datetime_string = get_short_talk_datetime_string(talk)
+        talk_string = (
+            f"{id_string}   {title_string}   {speaker_string}   {datetime_string}"
+        )
+        strings.append(talk_string)
+    return "\n".join(strings)
 
 
 @dataclass
