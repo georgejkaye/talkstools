@@ -2,11 +2,14 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 
 from talkstools.core.structs import (
     Talk,
+    get_abstract_string,
     get_speaker_and_affiliation_string,
+    get_speaker_string,
+    get_title_string,
     get_venue_string,
 )
 from talkstools.researchseminars.lookup import get_researchseminars_url
-from talkstools.talks.talk_read import get_talk_index_route
+from talkstools.talks.talk_read import get_abstract, get_talk_index_route
 from talkstools.talks.url import get_talks_url
 
 
@@ -21,7 +24,6 @@ def write_template(name: str, vars: dict) -> str:
 
 
 def write_announcement_email(admin: str, talk: Talk) -> str:
-    (speaker_name, speaker_text) = get_speaker_and_affiliation_string(talk)
     if talk.series is None:
         series = "seminar"
     else:
@@ -30,15 +32,16 @@ def write_announcement_email(admin: str, talk: Talk) -> str:
         "announce.txt",
         {
             "series": series,
-            "speaker_name": speaker_name,
-            "abstract": talk.abstract,
-            "title": talk.title,
-            "speaker_text": speaker_text,
+            "speaker_name": get_speaker_string(talk),
+            "abstract": get_abstract_string(talk),
+            "title": get_title_string(talk),
+            "speaker_text": get_speaker_and_affiliation_string(talk),
             "talk_date": talk.talk_start.strftime("%A %d %B %Y"),
             "talk_start": talk.talk_start.strftime("%H:%M"),
             "talk_end": talk.talk_end.strftime("%H:%M"),
             "venue": get_venue_string(talk),
             "admin": admin,
+            "url": get_researchseminars_url(talk),
         },
     )
     return email
