@@ -76,29 +76,31 @@ def get_title_string(talk: Talk) -> str:
     return talk.title
 
 
+def get_abstract_string(talk: Talk) -> str:
+    if talk.abstract is None:
+        return "Abstract to be confirmed"
+    return talk.abstract
+
+
 def get_venue_string(talk: Talk) -> str:
     if talk.venue is None:
         return "Venue to be confirmed"
     return talk.venue
 
 
-def get_speaker_and_affiliation_string(talk: Talk) -> tuple[str, str]:
-    if talk.speaker is None:
-        speaker_name = "Speaker to be confirmed"
-        speaker_string = speaker_name
-    else:
-        speaker_name = talk.speaker.name
-        if talk.speaker.affiliation is None:
-            speaker_string = speaker_name
-        else:
-            speaker_string = f"{talk.speaker.name} ({talk.speaker.affiliation})"
-    return (speaker_name, speaker_string)
-
-
 def get_speaker_string(talk: Talk) -> str:
     if talk.speaker is None:
         return "Speaker to be confirmed"
     return talk.speaker.name
+
+
+def get_speaker_and_affiliation_string(talk: Talk) -> str:
+    speaker_string = get_speaker_string(talk)
+    if not talk.speaker or talk.speaker.affiliation is None:
+        speaker_affiliation = ""
+    else:
+        speaker_affiliation = f" ({talk.speaker.affiliation})"
+    return f"{speaker_string}{speaker_affiliation}"
 
 
 def get_datetime_string(talk: Talk) -> str:
