@@ -5,6 +5,7 @@ from talkstools.core.structs import (
     get_speaker_and_affiliation_string,
     get_venue_string,
 )
+from talkstools.researchseminars.lookup import get_researchseminars_url
 from talkstools.talks.talk_read import get_talk_index_route
 from talkstools.talks.url import get_talks_url
 
@@ -33,7 +34,7 @@ def write_announcement_email(admin: str, talk: Talk) -> str:
             "abstract": talk.abstract,
             "title": talk.title,
             "speaker_text": speaker_text,
-            "talk_date": talk.talk_date.strftime("%A %d %B %Y"),
+            "talk_date": talk.talk_start.strftime("%A %d %B %Y"),
             "talk_start": talk.talk_start.strftime("%H:%M"),
             "talk_end": talk.talk_end.strftime("%H:%M"),
             "venue": get_venue_string(talk),
@@ -48,7 +49,7 @@ def write_announcent_discord_message(talk: Talk) -> str:
         series = "seminar"
     else:
         series = talk.series.name
-    if talk.id is None:
+    if talk.talk_id is None:
         raise RuntimeError("No talk id")
     (speaker_name, speaker_text) = get_speaker_and_affiliation_string(talk)
     message = write_template(
@@ -57,13 +58,12 @@ def write_announcent_discord_message(talk: Talk) -> str:
             "series": series,
             "speaker_name": speaker_name,
             "title": talk.title,
-            "talk_date": talk.talk_date.strftime("%A %d %B %Y"),
+            "talk_date": talk.talk_start.strftime("%A %d %B %Y"),
             "talk_start": talk.talk_start.strftime("%H:%M"),
             "talk_end": talk.talk_end.strftime("%H:%M"),
-            "venue": talk.venue,
-            "speaker_text": speaker_text,
-            "url": get_talks_url(get_talk_index_route(talk.id)),
             "venue": get_venue_string(talk),
+            "speaker_text": speaker_text,
+            "url": get_researchseminars_url(talk),
         },
     )
     return message
