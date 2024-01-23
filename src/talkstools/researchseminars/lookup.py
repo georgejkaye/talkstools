@@ -1,8 +1,8 @@
 from datetime import datetime, timezone
-import sys
+from typing import Optional
 import requests
 
-from talkstools.core.structs import Person, Talk, get_talk_string
+from talkstools.core.structs import Person, Talk
 
 
 def get_talk_url(talk_series: str, talk_id: int) -> str:
@@ -17,6 +17,13 @@ def get_researchseminars_url(talk: Talk) -> str:
     return f"https://researchseminars.org/talk/{talk.series_id}/{talk.talk_id}/"
 
 
+def get_property_or_none(properties: dict, field: str) -> Optional[str]:
+    value = properties[field]
+    if value == "":
+        return None
+    return value
+
+
 def get_talk_from_json(properties: dict) -> Talk:
     seminar_id = properties["seminar_id"]
     start_datetime = datetime.fromisoformat(properties["start_time"]).astimezone(
@@ -25,21 +32,16 @@ def get_talk_from_json(properties: dict) -> Talk:
     end_datetime = datetime.fromisoformat(properties["end_time"]).astimezone(
         timezone.utc
     )
-    title = properties["title"]
-    if title == "":
-        talk_title = None
+    talk_title = get_property_or_none(properties, "title")
+    talk_abstract = get_property_or_none(properties, "abstract")
+    speaker_name = get_property_or_none(properties, "speaker")
+    speaker_email = get_property_or_none(properties, "speaker_email")
+    speaker_affil = get_property_or_none(properties, "speaker_affiliation")
+    speaker_web = get_property_or_none(properties, "speaker_homepage")
+    if speaker_name is None:
+        speaker = None
     else:
-        talk_title = title
-    abstract = properties["abstract"]
-    if abstract == "":
-        talk_abstract = None
-    else:
-        talk_abstract = abstract
-    speaker_name = properties["speaker"]
-    speaker_email = properties["speaker_email"]
-    speaker_affil = properties["speaker_affiliation"]
-    speaker_web = properties["speaker_homepage"]
-    speaker = Person(speaker_name, speaker_email, speaker_affil, speaker_web)
+        speaker = Person(speaker_name, speaker_email, speaker_affil, speaker_web)
     talk_id = properties["seminar_ctr"]
     seminar_id = properties["seminar_id"]
     venue = properties["room"]
