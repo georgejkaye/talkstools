@@ -41,22 +41,6 @@ def get_talks_speaker_values(talk: Talk) -> tuple[str, str]:
     return (speaker_email, speaker_name)
 
 
-def get_talks_organiser_value(talk: Talk) -> str:
-    if talk.organiser is not None and talk.organiser.email is not None:
-        organiser_email = talk.organiser.email
-    else:
-        organiser_email = ""
-    return organiser_email
-
-
-def get_talks_special_value(talk: Talk) -> str:
-    if talk.special_message is not None:
-        special_message = talk.special_message
-    else:
-        special_message = ""
-    return special_message
-
-
 def get_talks_venue_value(talk: Talk) -> str:
     if talk.venue is not None:
         venue = talk.venue
@@ -74,10 +58,8 @@ def get_update_parts(talk: Talk) -> dict[str, str]:
     parts["talk[speaker_email]"] = speaker_email_value
     parts["talk[name_of_speaker]"] = speaker_name_value
     parts["talk[send_speaker_email]"] = "0"
-    parts["talk[organiser_email]"] = get_talks_organiser_value(talk)
-    parts["talk[special_message]"] = get_talks_special_value(talk)
     parts["talk[venue_name]"] = get_talks_venue_value(talk)
-    parts["talk[date_string]"] = talk.talk_date.strftime("%Y/%m/%d")
+    parts["talk[date_string]"] = talk.talk_start.strftime("%Y/%m/%d")
     parts["talk[start_time_string]"] = talk.talk_start.strftime("%H:%M")
     parts["talk[end_time_string]"] = talk.talk_end.strftime("%H:%M")
     parts["commit"] = "Save"
@@ -114,7 +96,7 @@ def add_talk(talk: Talk, session_id: str):
     )
     if response.status_code == 401:
         raise SystemExit(
-            f"Not authorised to add talk {talk.id} to list {talk.series_id}"
+            f"Not authorised to add talk {talk.talk_id} to list {talk.series_id}"
         )
     if response.status_code != 200:
         raise SystemExit(f"Error {response.status_code}: could not remove talk.")
@@ -151,7 +133,11 @@ def add_talks_in_range(
     start_day = start_date.weekday()
     current_date = start_date + timedelta(days=abs(day - start_day))
     while current_date <= end_date:
-        talk = Talk(list_id, current_date, start_time, end_time)
+        talk = Talk(
+            list_id,
+            datetime.combine(current_date, start_time),
+            datetime.combine(current_date, start_time),
+        )
         add_talk(talk, session_id)
         current_date = current_date + timedelta(days=7)
 
@@ -184,7 +170,9 @@ def main():
         session_id = login()
         if not (args.date is None or args.time is None):
             talk_date = datetime.strptime(args.date, "%Y-%m-%d").date()
-            talk = Talk(talk_list, talk_date, start_time, end_time)
+            start_datetime = datetime.combine(talk_date, start_time)
+            end_datetime = datetime.combine(talk_date, end_time)
+            talk = Talk(talk_list, start_datetime, end_datetime)
             add_talk(talk, session_id)
         elif not (args.range is None or args.day is None):
             start_date = datetime.strptime(args.range[0], "%Y-%m-%d").date()

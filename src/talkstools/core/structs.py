@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import date, datetime, time
+from datetime import datetime
 from typing import Optional
 
 
@@ -10,10 +10,11 @@ class Series:
 
 
 @dataclass
-class User:
+class Person:
     name: str
     email: Optional[str] = None
     affiliation: Optional[str] = None
+    web: Optional[str] = None
 
 
 @dataclass
@@ -57,18 +58,15 @@ def get_short_talk_table(talks: list[ShortTalk]) -> str:
 
 @dataclass
 class Talk:
-    series_id: int
-    talk_date: date
-    talk_start: time
-    talk_end: time
-    series_name: Optional[str] = None
+    series_id: int | str
+    talk_start: datetime
+    talk_end: datetime
     title: Optional[str] = None
     abstract: Optional[str] = None
-    speaker: Optional[User] = None
-    organiser: Optional[User] = None
-    special_message: Optional[str] = None
-    id: Optional[int] = None
+    speaker: Optional[Person] = None
+    talk_id: Optional[int] = None
     venue: Optional[str] = None
+    zoom: Optional[str] = None
     series: Optional[Series] = None
 
 
@@ -104,7 +102,7 @@ def get_speaker_string(talk: Talk) -> str:
 
 
 def get_datetime_string(talk: Talk) -> str:
-    return f"{talk.talk_date.strftime('%d %b %Y')} {talk.talk_start.strftime('%H:%M')}-{talk.talk_end.strftime('%H:%M')}"
+    return f"{talk.talk_start.astimezone(tz=None).strftime('%d %b %Y')} {talk.talk_start.astimezone(tz=None).strftime('%H:%M')}-{talk.talk_end.astimezone(tz=None).strftime('%H:%M')}"
 
 
 def get_talk_string(talk: Talk) -> str:

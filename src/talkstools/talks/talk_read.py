@@ -1,11 +1,11 @@
 import requests
 
-from datetime import date, time, datetime
+from datetime import datetime
 from typing import Optional
 from lxml import etree
 from lxml.etree import _Element as Element
 
-from talkstools.core.structs import Series, Talk, User
+from talkstools.core.structs import Series, Talk, Person
 from talkstools.talks.url import get_talks_url
 
 talk_index_route = "talk/index"
@@ -64,7 +64,7 @@ def get_show_user_route(user_id: int) -> str:
     return f"/user/show/{user_id}"
 
 
-def get_person(user_id: int, cookie: str) -> User:
+def get_person(user_id: int, cookie: str) -> Person:
     speaker_url = get_talks_url(get_show_user_route(user_id))
     speaker_page = requests_get(speaker_url, cookies={"_session_id": cookie})
     speaker_root = etree.HTML(speaker_page)
@@ -76,10 +76,10 @@ def get_person(user_id: int, cookie: str) -> User:
     if speaker_email_item is None or speaker_email_item.text is None:
         raise SystemExit("Could not find speaker email")
     speaker_email = speaker_email_item.text
-    return User(speaker_name, speaker_email, speaker_affiliation)
+    return Person(speaker_name, speaker_email, speaker_affiliation)
 
 
-def get_speaker_from_details(details: Element, cookie: str) -> Optional[User]:
+def get_speaker_from_details(details: Element, cookie: str) -> Optional[Person]:
     speaker_item = details.xpath("(.//li)[1]")[0]
     if speaker_item is None:
         raise SystemExit("Could not find speaker")
@@ -88,13 +88,13 @@ def get_speaker_from_details(details: Element, cookie: str) -> Optional[User]:
         text = "".join(speaker_item.itertext())
         if text == "Speaker to be confirmed":
             return None
-        return User(text)
+        return Person(text)
     speaker_route = speaker_link.get("href")
     speaker_id = int(speaker_route.split("/")[-1])
     return get_person(speaker_id, cookie)
 
 
-def get_times_from_details(details: Element) -> tuple[date, time, time]:
+def get_times_from_details(details: Element) -> tuple[datetime, datetime]:
     time_detail = details.xpath("(.//li)[2]")[0]
     if time_detail is None:
         raise SystemExit("Could not get time")
@@ -107,7 +107,10 @@ def get_times_from_details(details: Element) -> tuple[date, time, time]:
     start_object = datetime.strptime(start_text, "%H:%M").time()
     end_text = times[1]
     end_object = datetime.strptime(end_text, "%H:%M").time()
-    return (date_object, start_object, end_object)
+    return (
+        datetime.combine(date_object, start_object),
+        datetime.combine(date_object, end_object),
+    )
 
 
 def get_venue_from_details(details: Element) -> Optional[str]:
@@ -129,7 +132,7 @@ def get_special(root: Element) -> Optional[str]:
     return special.text
 
 
-def get_organiser(root: Element, cookie) -> User:
+def get_organiser(root: Element, cookie) -> Person:
     organiser = root.xpath("((.//div[@class = 'vevent']/p)[2])/a")[0]
     if organiser is None or organiser.text is None:
         raise SystemExit("Could not find organiser")
@@ -172,23 +175,16 @@ def get_talk(talk_id: int, session_id: str):
     talk_title = get_title(root)
     talk_details = get_details(root)
     talk_speaker = get_speaker_from_details(talk_details, session_id)
-    (talk_date, talk_start, talk_end) = get_times_from_details(talk_details)
+    (talk_start, talk_end) = get_times_from_details(talk_details)
     talk_venue = get_venue_from_details(talk_details)
-    talk_special = get_special(root)
     talk_abstract = get_abstract(root)
-    talk_organiser = get_organiser(root, session_id)
     return Talk(
         talk_series.id,
-        talk_date,
         talk_start,
         talk_end,
-        talk_series.name,
         talk_title,
         talk_abstract,
         talk_speaker,
-        talk_organiser,
-        talk_special,
         talk_id,
         talk_venue,
-        talk_series,
     )
