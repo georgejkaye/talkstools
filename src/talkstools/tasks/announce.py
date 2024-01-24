@@ -1,3 +1,4 @@
+import sys
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from talkstools.core.structs import (
@@ -8,7 +9,11 @@ from talkstools.core.structs import (
     get_title_string,
     get_venue_string,
 )
-from talkstools.researchseminars.lookup import get_researchseminars_url
+from talkstools.discord.bot import post_to_discord
+from talkstools.researchseminars.lookup import (
+    get_next_talk_from_series,
+    get_researchseminars_url,
+)
 from talkstools.talks.talk_read import get_abstract, get_talk_index_route
 from talkstools.talks.url import get_talks_url
 
@@ -81,3 +86,18 @@ def print_email(email: str):
     print(
         "================================================================================"
     )
+
+
+def start(admin: str, talk_series: str):
+    talk = get_next_talk_from_series(talk_series)
+    email = write_announcement_email(admin, talk)
+    print_email(email)
+    discord_message = write_announcent_discord_message(talk)
+    post_to_discord("seminars", discord_message)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print(f"Usage: python {sys.argv[0]} <admin name> <series id>")
+        exit(1)
+    start(sys.argv[1], sys.argv[2])
