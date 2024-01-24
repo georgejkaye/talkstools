@@ -78,3 +78,11 @@ def get_talks_from_series(talk_series: str) -> list[Talk]:
         return talks_list
     else:
         raise RuntimeError("Could not get series")
+
+
+def get_next_talk_from_series(talk_series: str) -> Talk:
+    talks = get_talks_from_series(talk_series)
+    if len(talks) == 0:
+        exit(0)
+    talk = talks[0]
+    return talk
