@@ -54,18 +54,17 @@ def write_announcent_discord_message(talk: Talk) -> str:
         series = talk.series.name
     if talk.talk_id is None:
         raise RuntimeError("No talk id")
-    (speaker_name, speaker_text) = get_speaker_and_affiliation_string(talk)
     message = write_template(
         "discord-announce.txt",
         {
             "series": series,
-            "speaker_name": speaker_name,
+            "speaker_name": get_speaker_string(talk),
             "title": talk.title,
             "talk_date": talk.talk_start.strftime("%A %d %B %Y"),
             "talk_start": talk.talk_start.strftime("%H:%M"),
             "talk_end": talk.talk_end.strftime("%H:%M"),
             "venue": get_venue_string(talk),
-            "speaker_text": speaker_text,
+            "speaker_text": get_speaker_and_affiliation_string(talk),
             "url": get_researchseminars_url(talk),
         },
     )
