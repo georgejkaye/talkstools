@@ -83,6 +83,19 @@ def get_talks_from_series(talk_series: str) -> list[Talk]:
 def get_next_talk_from_series(talk_series: str) -> Talk:
     talks = get_talks_from_series(talk_series)
     if len(talks) == 0:
+        print("No talks in series")
         exit(0)
-    talk = talks[0]
-    return talk
+    # Apparently one will 'soon' be able to specify a date range for talks
+    # Until now we just deal with them manually
+    sorted_talks = sorted(talks, key=lambda t: t.talk_start)
+    now = datetime.now(timezone.utc)
+    print(now)
+    next_talk = None
+    for talk in sorted_talks:
+        if talk.talk_start >= now:
+            next_talk = talk
+            break
+    if next_talk is None:
+        print("No upcoming talks")
+        exit(0)
+    return next_talk
