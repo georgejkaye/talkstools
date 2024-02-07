@@ -23,7 +23,10 @@ def post_to_discord(channel: str, message: str):
             if channel is not None:
                 # for message in messages:
                 #     await channel.send(message)
-                await channel.send(message)
+                response = await channel.send(message)
+                message_id = response.id
+                message_object = await channel.fetch_message(message_id)
+                await message_object.edit(suppress=True)
         await client.close()
 
     try:
